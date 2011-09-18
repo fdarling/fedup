@@ -1,0 +1,21 @@
+<!DOCTYPE RCC><RCC version="1.0">
+	<qresource>
+		<file>icons/closeAll.bmp</file>
+		<file>icons/closeFile.bmp</file>
+		<file>icons/copy.bmp</file>
+		<file>icons/cut.bmp</file>
+		<file>icons/delete.ico</file>
+		<file>icons/find.bmp</file>
+		<file>icons/newFile.bmp</file>
+		<file>icons/openFile.bmp</file>
+		<file>icons/paste.bmp</file>
+		<file>icons/playRecord.bmp</file>
+		<file>icons/playRecord_m.bmp</file>
+		<file>icons/redo.bmp</file>
+		<file>icons/saved.ico</file>
+		<file>icons/startRecord.bmp</file>
+		<file>icons/stopRecord.bmp</file>
+		<file>icons/undo.bmp</file>
+		<file>icons/unsaved.ico</file>
+	</qresource>
+</RCC>
