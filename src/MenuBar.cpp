@@ -3,51 +3,51 @@
 
 namespace fedup {
 
-MenuBar::MenuBar(Actions *_actions, QWidget *parent) : QMenuBar(parent) // TODO rename _actions to actions
+MenuBar::MenuBar(Actions *actions, QWidget *parent) : QMenuBar(parent)
 {
 	{
 		QMenu * const fileMenu = this->addMenu("&File");
-		fileMenu->addAction(_actions->fileNew);
+		fileMenu->addAction(actions->fileNew);
 		// TODO "Re&load from Disk"
-		fileMenu->addAction(_actions->fileOpen);
-		fileMenu->addAction(_actions->fileSave);
-		fileMenu->addAction(_actions->fileSaveAs);
+		fileMenu->addAction(actions->fileOpen);
+		fileMenu->addAction(actions->fileSave);
+		fileMenu->addAction(actions->fileSaveAs);
 		// TODO "Save a Copy As..."
 		// TODO "Save All"
 		// TODO "Rename..."
-		fileMenu->addAction(_actions->fileClose);
-		fileMenu->addAction(_actions->fileCloseAll);
+		fileMenu->addAction(actions->fileClose);
+		fileMenu->addAction(actions->fileCloseAll);
 		// TODO "Close All but Active Document"
 		// TODO "Delete from Disk"
 		fileMenu->addSeparator();
-		fileMenu->addAction(_actions->fileExit);
+		fileMenu->addAction(actions->fileExit);
 	}
 	{
 		QMenu * const editMenu = this->addMenu("&Edit");
-		editMenu->addAction(_actions->editUndo);
-		editMenu->addAction(_actions->editRedo);
+		editMenu->addAction(actions->editUndo);
+		editMenu->addAction(actions->editRedo);
 		editMenu->addSeparator();
-		editMenu->addAction(_actions->editCut);
-		editMenu->addAction(_actions->editCopy);
-		editMenu->addAction(_actions->editPaste);
-		editMenu->addAction(_actions->editDelete);
+		editMenu->addAction(actions->editCut);
+		editMenu->addAction(actions->editCopy);
+		editMenu->addAction(actions->editPaste);
+		editMenu->addAction(actions->editDelete);
 		// TODO /*, QKeySequence("Del")*/ have this display "DEL" next to it? I don't want to override normal DEL operation though... Notepad++ actually sends a delete keystroke!
-		editMenu->addAction(_actions->editSelectAll);
+		editMenu->addAction(actions->editSelectAll);
 		editMenu->addSeparator();
-		editMenu->addAction(_actions->editDuplicateLines);
-		editMenu->addAction(_actions->editDeleteLine);
-		editMenu->addAction(_actions->editMoveLineUp);
-		editMenu->addAction(_actions->editMoveLineDown);
+		editMenu->addAction(actions->editDuplicateLines);
+		editMenu->addAction(actions->editDeleteLine);
+		editMenu->addAction(actions->editMoveLineUp);
+		editMenu->addAction(actions->editMoveLineDown);
 		editMenu->addSeparator();
-		editMenu->addAction(_actions->editToggleBlockComment);
+		editMenu->addAction(actions->editToggleBlockComment);
 		editMenu->addSeparator();
-		editMenu->addAction(_actions->editTrimTrailingSpaces);
+		editMenu->addAction(actions->editTrimTrailingSpaces);
 
 
 	}
 	{
 		QMenu * const searchMenu = this->addMenu("&Search");
-		searchMenu->addAction(_actions->searchFind);
+		searchMenu->addAction(actions->searchFind);
 		// searchMenu->addAction("Find in Files...", this, SLOT(slot_SearchFindInFiles()), QKeySequence("Ctrl+Shift+F"));
 // searchMenu->addAction("Find Next", tabs, SLOT(slot_FindNext()), QKeySequence("F3"));
 // searchMenu->addAction("Find Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Shift+F3"));
@@ -60,7 +60,7 @@ MenuBar::MenuBar(Actions *_actions, QWidget *parent) : QMenuBar(parent) // TODO 
 		// searchMenu->addAction("Search Results Window", tabs, SLOT(slot_FindPrev()), QKeySequence("F7"));
 		// searchMenu->addAction("Next Search Result", tabs, SLOT(slot_FindPrev()), QKeySequence("F4"));
 		// searchMenu->addAction("Previous Search Result", tabs, SLOT(slot_FindPrev()), QKeySequence("Shift+F4"));
-		searchMenu->addAction(_actions->searchGoTo);
+		searchMenu->addAction(actions->searchGoTo);
 		//searchMenu->addAction("Go to Matching Brace", this, SLOT(slot_SearchGoTo()), QKeySequence("Ctrl+B"));
 	}
 	{

@@ -8,6 +8,5 @@
 - Make more menus items aware of when they won't actually do anything and disable them appropriately, Move Line Up for example and Close File, and Save
 - Debug the Undo/Redo availablity tracking code when going from no documents open to 1 open
 - Fix fullscreen/postit modes
-- rename "_actions" to "actions" for passed in constructor arguments
 - Make FScintilla more context switching aware, important for smart highlighting and current line indication
 - Make application icon
