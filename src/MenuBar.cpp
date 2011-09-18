@@ -1,9 +1,10 @@
 #include "MenuBar.h"
 #include "Actions.h"
+#include "RecentFilesList.h"
 
 namespace fedup {
 
-MenuBar::MenuBar(Actions *actions, QWidget *parent) : QMenuBar(parent)
+MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenuBar(parent), _recentFilesList(NULL)
 {
 	{
 		QMenu * const fileMenu = this->addMenu("&File");
@@ -19,6 +20,8 @@ MenuBar::MenuBar(Actions *actions, QWidget *parent) : QMenuBar(parent)
 		fileMenu->addAction(actions->fileCloseAll);
 		// TODO "Close All but Active Document"
 		// TODO "Delete from Disk"
+		fileMenu->addSeparator();
+		_recentFilesList = new RecentFilesList(fileMenu, settings);
 		fileMenu->addSeparator();
 		fileMenu->addAction(actions->fileExit);
 	}

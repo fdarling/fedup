@@ -12,6 +12,7 @@ HEADERS = \
 	src/LoadIcon.h \
 	src/LexerPicker.h \
 	src/Actions.h \
+	src/RecentFilesList.h \
 	src/GoToDialog.h \
 	src/FindDialog.h \
 	src/TabContext.h \
@@ -28,6 +29,7 @@ SOURCES = \
 	src/LoadIcon.cpp \
 	src/LexerPicker.cpp \
 	src/Actions.cpp \
+	src/RecentFilesList.cpp \
 	src/GoToDialog.cpp \
 	src/FindDialog.cpp \
 	src/TabContext.cpp \

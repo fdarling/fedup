@@ -9,6 +9,7 @@
 #include "TabContext.h"
 #include "FindDialog.h"
 #include "GoToDialog.h"
+#include "RecentFilesList.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -18,7 +19,7 @@ namespace fedup {
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _settings(QSettings::UserScope, "forestdarling.com", "fedup3"), _actions(NULL), _menubar(NULL), _toolbar(NULL), _statusbar(NULL), _editpane(NULL), _findDialog(NULL), _gotoDialog(NULL)
 {
 	_actions = new Actions(this);
-	setMenuBar(_menubar = new MenuBar(_actions, this));
+	setMenuBar(_menubar = new MenuBar(_actions, _settings, this));
 	addToolBar(_toolbar = new ToolBar(_actions, this));
 	setStatusBar(_statusbar = new StatusBar(this));
 	setCentralWidget(_editpane = new EditPane(this));
@@ -42,6 +43,7 @@ MainWindow::~MainWindow()
 	_settings.setValue("window_geometry", saveGeometry());
 	_settings.setValue("working_directory", _currentDirectory);
 	_editpane->saveSession(_settings);
+	_menubar->recentFilesList()->saveSettings(_settings);
 }
 
 void MainWindow::_SetupActions()
@@ -104,6 +106,8 @@ void MainWindow::_SetupConnections()
 	connect(e, SIGNAL(lengthChanged(int)), _gotoDialog, SLOT(slot_SetMaxOffset(int))); // TODO use slot_SetLength instead?
 	connect(_gotoDialog, SIGNAL(goToLine(int)), e, SLOT(goToLine(int)));
 	connect(_gotoDialog, SIGNAL(goToOffset(int)), e, SLOT(goToOffset(int)));
+
+	connect(_menubar->recentFilesList(), SIGNAL(recentFileClicked(const QString &)), this, SLOT(open(const QString &)));
 }
 
 void MainWindow::open()
@@ -118,6 +122,7 @@ void MainWindow::open(const QString &filePath)
 	QFileInfo info(filePath);
 	_currentDirectory = info.absolutePath();
 	_editpane->open(filePath);
+	_menubar->recentFilesList()->slot_FileOpened(filePath); // TODO use signals to communicate that a file opened?
 }
 
 void MainWindow::save()
