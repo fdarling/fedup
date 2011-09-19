@@ -67,7 +67,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		//searchMenu->addAction("Go to Matching Brace", this, SLOT(slot_SearchGoTo()), QKeySequence("Ctrl+B"));
 	}
 	{
-		QMenu * const viewMenu = this->addMenu("&View");
+		// QMenu * const viewMenu = this->addMenu("&View");
 		// viewMenu->addAction("Always on Top", this, SLOT(setAlwaysOnTop(bool)))->setCheckable(true); // TODO reenable
 		// viewMenu->addAction("Toggle Full Screen Mode", this, SLOT(setFullscreen(bool)), QKeySequence("F11"))->setCheckable(true);
 		// viewMenu->addAction("Post-It", this, SLOT(setPostit(bool)), QKeySequence("F12"))->setCheckable(true);

@@ -30,14 +30,15 @@ public slots:
 protected slots:
 	void slot_RecentFileClicked(QAction *action);
 protected:
-	QMenu * const fileMenu;
 	typedef QAction* QActionPointer;
-	QActionPointer separator;
-	QActionGroup * recentFilesGroup;
 	typedef QMap<QString, QActionPointer> PathToActionMap;
 	typedef QList<QActionPointer> QActionList;
-	PathToActionMap recentFilesMap;
-	QActionList recentFilesList;
+
+	QMenu * const _fileMenu;
+	QActionPointer _separator;
+	QActionGroup * _recentFilesGroup;
+	PathToActionMap _recentFilesMap;
+	QActionList _recentFilesList;
 };
 
 } // namespace fedup
