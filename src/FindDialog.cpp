@@ -19,10 +19,12 @@
 
 namespace fedup {
 
+static QString ConvertFromExtended(const QString &query);
+
 FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt::Tool),
 	combobox(NULL),
 	wholeWord(NULL), caseSensitive(NULL), wrapAround(NULL),
-	regularExpressionMode(NULL),
+	extendedMode(NULL), regularExpressionMode(NULL),
 	downDirection(NULL), _editor(editor)
 {
 	// setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -76,9 +78,10 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 				QGroupBox * const groupbox = new QGroupBox("Search Mode", this);
 				QVBoxLayout * const vbox2 = new QVBoxLayout(groupbox);
 				QRadioButton * const normalMode = new QRadioButton("&Normal", this);
-				vbox2->addWidget(normalMode);
-				vbox2->addWidget(new QRadioButton("E&xtended (\\n, \\r, \\t, \\0, \\x...)", this));
+				extendedMode = new QRadioButton("E&xtended (\\n, \\r, \\t, \\0, \\x...)", this);
 				regularExpressionMode = new QRadioButton("Regular e&xpression", this);
+				vbox2->addWidget(normalMode);
+				vbox2->addWidget(extendedMode);
 				vbox2->addWidget(regularExpressionMode);
 				hbox2->addWidget(groupbox, 1);
 
@@ -154,7 +157,7 @@ void FindDialog::_slot_FindNext()
 	int line  = downDirection->isChecked() ? lineTo  : lineFrom;
 	int index = downDirection->isChecked() ? indexTo : indexFrom;
 	// TODO implement the "Extended" mode
-	_editor->findFirst(combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wrapAround->isChecked(), downDirection->isChecked(), line, index);
+	_editor->findFirst(extendedMode->isChecked() ? ConvertFromExtended(combobox->currentText()) : combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wrapAround->isChecked(), downDirection->isChecked(), line, index);
 }
 
 void FindDialog::_slot_FocusChanged(QWidget *old, QWidget *now)
@@ -182,6 +185,74 @@ void FindDialog::hideEvent(QHideEvent *event)
 {
 	if (!event->spontaneous())
 		_geometry = geometry();
+}
+
+static QString ConvertFromExtended(const QString &query)
+{
+	QString result;
+	result.reserve(query.size());
+	for (int i = 0; i < query.size(); /* NO-OP */)
+	{
+		QChar current = query.at(i++);
+		if (current == '\\' && i != query.size())
+		{
+			current = query.at(i++);
+			switch (current.toAscii())
+			{
+				case 'r': result.append('\r'); break;
+				case 'n': result.append('\n'); break;
+				case '0': result.append('\0'); break;
+				case 't': result.append('\t'); break;
+				case '\\': result.append('\\'); break;
+				case 'b':
+				case 'd':
+				case 'o':
+				case 'x':
+				case 'u':
+				{
+					int size = 0, base = 0;
+					if (current == 'b') { //11111111
+						size = 8, base = 2;
+					} else if (current == 'o') { //377
+						size = 3, base = 8;
+					} else if (current == 'd') { //255
+						size = 3, base = 10;
+					} else if (current == 'x') { //0xFF
+						size = 2, base = 16;
+					} else if (current == 'u') { //0xCDCD
+						size = 4, base = 16;
+					}
+					if (i + size <= query.size())
+					{
+						bool ok = false;
+						const ushort value = query.mid(i, size).toUShort(&ok, base);
+						if (ok)
+						{
+							if (current == 'u')
+								result.append(QChar(value));
+							else
+								result.append(QChar(static_cast<char>(value)));
+							i += size;
+							break;
+						}
+						// otherwise we couldn't convert it successfully, fall back to normal output
+					}
+					//not enough chars to make parameter, use default method as fallback
+				}
+				default:
+				{
+					result.append('\\');
+					result.append(current);
+					break;
+				}
+			}
+		}
+		else
+		{
+			result.append(current);
+		}
+	}
+	return result;
 }
 
 } // namespace fedup

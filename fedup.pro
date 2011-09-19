@@ -11,6 +11,7 @@ HEADERS = \
 	src/qtsingleapplication/qtsingleapplication.h \
 	src/LoadIcon.h \
 	src/LexerPicker.h \
+	src/FileFilters.h \
 	src/Actions.h \
 	src/RecentFilesList.h \
 	src/GoToDialog.h \
@@ -28,6 +29,7 @@ SOURCES = \
 	src/qtsingleapplication/qtsingleapplication.cpp \
 	src/LoadIcon.cpp \
 	src/LexerPicker.cpp \
+	src/FileFilters.cpp \
 	src/Actions.cpp \
 	src/RecentFilesList.cpp \
 	src/GoToDialog.cpp \

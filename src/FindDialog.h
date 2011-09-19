@@ -31,6 +31,7 @@ protected:
 	QCheckBox *wholeWord;
 	QCheckBox *caseSensitive;
 	QCheckBox *wrapAround;
+	QRadioButton *extendedMode;
 	QRadioButton *regularExpressionMode;
 	QRadioButton *downDirection;
 	FScintilla *_editor;

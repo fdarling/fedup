@@ -10,11 +10,14 @@
 #include "FindDialog.h"
 #include "GoToDialog.h"
 #include "RecentFilesList.h"
+#include "FileFilters.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 
 namespace fedup {
+
+extern const QString FILE_TYPES_STRING; // defined at the bottom of this file
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _settings(QSettings::UserScope, "forestdarling.com", "fedup3"), _actions(NULL), _menubar(NULL), _toolbar(NULL), _statusbar(NULL), _editpane(NULL), _findDialog(NULL), _gotoDialog(NULL)
 {
@@ -112,7 +115,7 @@ void MainWindow::_SetupConnections()
 
 void MainWindow::open()
 {
-	const QStringList fileList = QFileDialog::getOpenFileNames(this, "Open...", _currentDirectory);
+	const QStringList fileList = QFileDialog::getOpenFileNames(this, "Open...", _currentDirectory, FILE_FILTERS);
 	for (QStringList::const_iterator it = fileList.begin(); it != fileList.end(); ++it)
 		open(*it);
 }
@@ -157,7 +160,7 @@ void MainWindow::save()
 
 void MainWindow::saveAs()
 {
-	const QString filename = QFileDialog::getSaveFileName(this, "Save As...", _currentDirectory);
+	const QString filename = QFileDialog::getSaveFileName(this, "Save As...", _currentDirectory, FILE_FILTERS);
 	if (filename.size() == 0)
 		return;
 
