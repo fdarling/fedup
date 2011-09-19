@@ -86,7 +86,7 @@ void RecentFilesList::slot_FileOpened(const QString &filePath)
 
 void RecentFilesList::slot_RecentFileClicked(QAction *action)
 {
-	emit(recentFileClicked(action->data().toString()));
+	emit recentFileClicked(action->data().toString());
 }
 
 } // namespace fedup

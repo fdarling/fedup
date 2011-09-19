@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _settings(QSettin
 	setStatusBar(_statusbar = new StatusBar(this));
 	setCentralWidget(_editpane = new EditPane(this));
 
-	_findDialog = new FindDialog(this);
+	_findDialog = new FindDialog(_editpane->editor(), this);
 	_gotoDialog = new GoToDialog(this);
 
 	_SetupActions();

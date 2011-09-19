@@ -2,37 +2,39 @@
 #define FINDDIALOG_H
 
 #include <QDialog>
+#include <QRect>
 
 QT_BEGIN_NAMESPACE
-class QLineEdit;
+class QComboBox;
 class QCheckBox;
 class QRadioButton;
 QT_END_NAMESPACE
 
 namespace fedup {
 
+class FScintilla;
+
 class FindDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	FindDialog(QWidget *parent = NULL);
+	FindDialog(FScintilla *editor, QWidget *parent = NULL);
 	~FindDialog();
-signals:
-	void findFirst(const QString &expr, bool re, bool cs, bool wo, bool wrap, bool forward);
-	// void find(const QString &expr, bool re, bool cs, bool wo, bool wrap, bool forward);
-	void findNext();
-	// void countOccurrences(const QString &needle);
 protected slots:
-	void slot_FindNext();
-	// void slot_FindPrev();
-	void slot_FocusChanged(QWidget *old, QWidget *now);
+	void _slot_FindNext();
+	void _slot_FocusChanged(QWidget *old, QWidget *now);
 protected:
-	QLineEdit *combobox;
+	void showEvent(QShowEvent *event);
+	void hideEvent(QHideEvent *event);
+
+	QComboBox *combobox;
 	QCheckBox *wholeWord;
 	QCheckBox *caseSensitive;
 	QCheckBox *wrapAround;
 	QRadioButton *regularExpressionMode;
 	QRadioButton *downDirection;
+	FScintilla *_editor;
+	QRect _geometry;
 };
 
 } // namespace fedup

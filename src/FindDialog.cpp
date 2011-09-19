@@ -1,25 +1,29 @@
 #include "FindDialog.h"
+#include "FScintilla.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 // #include <QGridLayout>
 #include <QLabel>
-#include <QLineEdit>
+#include <QComboBox>
 #include <QCheckBox>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QSlider>
+#include <QShowEvent>
+#include <QHideEvent>
+#include <QLineEdit>
 
 #include <QApplication>
 
 namespace fedup {
 
-FindDialog::FindDialog(QWidget *parent) : QDialog(parent, Qt::Tool),
+FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt::Tool),
 	combobox(NULL),
 	wholeWord(NULL), caseSensitive(NULL), wrapAround(NULL),
 	regularExpressionMode(NULL),
-	downDirection(NULL)
+	downDirection(NULL), _editor(editor)
 {
 	// setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 	// setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -31,8 +35,8 @@ FindDialog::FindDialog(QWidget *parent) : QDialog(parent, Qt::Tool),
 			QHBoxLayout * const hbox2 = new QHBoxLayout;
 			QLabel * const findLabel = new QLabel("&Find what:", this);
 			hbox2->addWidget(findLabel);
-			combobox = new QLineEdit(this);
-			// combobox->setEditable(true);
+			combobox = new QComboBox(this);
+			combobox->setEditable(true);
 			findLabel->setBuddy(combobox);
 			hbox2->addWidget(combobox, 1);
 			vbox->addLayout(hbox2);
@@ -99,9 +103,9 @@ FindDialog::FindDialog(QWidget *parent) : QDialog(parent, Qt::Tool),
 		QVBoxLayout * const vbox = new QVBoxLayout;
 		{
 			QPushButton * const findNextButton = new QPushButton("Find Next", this);
-			connect(combobox, SIGNAL(returnPressed()), findNextButton, SIGNAL(clicked()));
+			// connect(combobox, SIGNAL(returnPressed()), findNextButton, SIGNAL(clicked())); // TODO detect return being pressed manually!
 			// QPushButton * const findPrevButton = new QPushButton("Find Prev", this);
-			connect(findNextButton, SIGNAL(clicked()), this, SLOT(slot_FindNext()));
+			connect(findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
 			// connect(findPrevButton, SIGNAL(clicked()), this, SLOT(slot_FindPrev()));
 			vbox->addWidget(findNextButton);
 			// vbox->addWidget(findPrevButton);
@@ -131,7 +135,7 @@ FindDialog::FindDialog(QWidget *parent) : QDialog(parent, Qt::Tool),
 	}
 
 	// setFocusPolicy(Qt::StrongFocus);
-	connect(qApp, SIGNAL(focusChanged(QWidget *, QWidget *)), this, SLOT(slot_FocusChanged(QWidget *, QWidget *)));
+	connect(qApp, SIGNAL(focusChanged(QWidget *, QWidget *)), this, SLOT(_slot_FocusChanged(QWidget *, QWidget *)));
 
 	combobox->setFocus();
 }
@@ -140,35 +144,44 @@ FindDialog::~FindDialog()
 {
 }
 
-void FindDialog::slot_FindNext()
+void FindDialog::_slot_FindNext()
 {
-	if (combobox->text().size() == 0)
+	if (combobox->currentText().size() == 0)
 		return;
 
-	// TODO
-	static bool x = false;
-	if (x == false)
-	{
-		// x = true;
-		emit(findFirst(combobox->text(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wrapAround->isChecked(), downDirection->isChecked()));
-	}
-	else
-		emit(findNext());
+	int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
+	_editor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+	int line  = downDirection->isChecked() ? lineTo  : lineFrom;
+	int index = downDirection->isChecked() ? indexTo : indexFrom;
+	// TODO implement the "Extended" mode
+	_editor->findFirst(combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wrapAround->isChecked(), downDirection->isChecked(), line, index);
 }
 
-/*void FindDialog::slot_FindPrev()
-{
-	if (combobox->currentText().size() > 0)
-		emit(findFirst(combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wholeWord->isChecked(), false));
-}*/
-
-void FindDialog::slot_FocusChanged(QWidget *old, QWidget *now)
+void FindDialog::_slot_FocusChanged(QWidget *old, QWidget *now)
 {
 	Q_UNUSED(old);
 	Q_UNUSED(now);
 	// HACK, I use 0.99 instead of 1.0 to force transparency to be enabled, that way it won't glitch
 	// when the transparency is lowered as it would if transparency were enabled, *then* lowered
+	// TODO make this actually respect the settings!
 	setWindowOpacity(isActiveWindow() ? 0.99 : 0.5);
+}
+
+void FindDialog::showEvent(QShowEvent *event)
+{
+	QDialog::showEvent(event);
+	if (!event->spontaneous())
+	{
+		combobox->lineEdit()->setText(_editor->selectedText());
+		if (!_geometry.isNull())
+			setGeometry(_geometry);
+	}
+}
+
+void FindDialog::hideEvent(QHideEvent *event)
+{
+	if (!event->spontaneous())
+		_geometry = geometry();
 }
 
 } // namespace fedup

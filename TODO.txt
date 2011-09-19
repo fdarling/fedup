@@ -10,3 +10,4 @@
 - Fix fullscreen/postit modes
 - Make FScintilla more context switching aware, important for smart highlighting and current line indication
 - Make application icon
+- Separate  the code that ensures dialogs only center themselves on the parent window once when initially shown into a common base class
