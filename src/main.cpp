@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 		if (it != arguments.end() && (it->endsWith(applicationFilename, Qt::CaseInsensitive) || it->endsWith(applicationBaseName, Qt::CaseInsensitive)))
 			++it;
 		for (; it != arguments.end(); ++it)
-			app.sendMessage(*it);
+			app.sendMessage(QFileInfo(*it).absoluteFilePath());
 		return 0;
 	}
 
