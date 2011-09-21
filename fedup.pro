@@ -9,6 +9,7 @@ RESOURCES = fedup.qrc
 HEADERS = \
 	src/qtsingleapplication/qtlocalpeer.h \
 	src/qtsingleapplication/qtsingleapplication.h \
+	src/globals.h \
 	src/LoadIcon.h \
 	src/LexerPicker.h \
 	src/FileFilters.h \

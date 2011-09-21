@@ -35,8 +35,11 @@ int EditPaneTabs::addTab(const QString &tabname, TabContext *context)
 	const int newIndex = QTabBar::addTab(savedIcon, tabname);
 	setTabData(newIndex, qVariantFromValue(reinterpret_cast<void*>(context)));
 	blockSignals(false);
+	const bool shouldEmit = (count() == 1);
 	if (currentIndex() == newIndex)
 		emit currentChanged(newIndex);
+	if (shouldEmit)
+		emit containsTabsChanged(true);
 	return newIndex;
 }
 
@@ -57,7 +60,10 @@ void EditPaneTabs::removeTab(int index)
 	QTabBar::removeTab(index);
 	emit tabRemoved(context);
 	if (count() == 0)
+	{
+		emit containsTabsChanged(false);
 		emit tabChanged(NULL, NULL);
+	}
 	//qDebug() << "Removed tab with context =" << context;
 	//qDebug() << "Done removing tab" << index;
 }

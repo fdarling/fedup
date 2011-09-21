@@ -25,6 +25,7 @@ public:
 public slots:
 	void slot_ModificationChanged(bool m);
 signals:
+	void containsTabsChanged(bool hasTabs);
 	void tabRemoved(TabContext *context);
 	void tabChanged(TabContext *context, TabContext *oldContext);
 protected slots:

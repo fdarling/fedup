@@ -2,6 +2,7 @@
 #define FEDUP_EDITPANE_H
 
 #include <QWidget>
+#include "globals.h"
 
 QT_BEGIN_NAMESPACE
 class QSettings;
@@ -27,7 +28,8 @@ public:
 	void loadSession(QSettings &settings);
 	void saveSession(QSettings &settings) const;
 
-	bool open(const QString &filePath);
+	OpenResult open(const QString &filePath);
+	SaveResult saveAs(const QString &filePath);
 public slots:
 	void openNew();
 	void closeTab();

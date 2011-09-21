@@ -52,10 +52,17 @@ MainWindow::~MainWindow()
 void MainWindow::_SetupActions()
 {
 	FScintilla * const e = _editpane->editor();
+	EditPaneTabs * const tabs = _editpane->tabs();
 
 	// make the actions know when they are available
 	_actions->fileSave->setEnabled(false);
-	connect(e, SIGNAL(modificationChanged(bool)), _actions->fileSave, SLOT(setEnabled(bool)));
+	_actions->fileSaveAs->setEnabled(false);
+	_actions->fileClose->setEnabled(false);
+	_actions->fileCloseAll->setEnabled(false);
+	connect(e,    SIGNAL(modificationChanged(bool)), _actions->fileSave,     SLOT(setEnabled(bool)));
+	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileSaveAs,   SLOT(setEnabled(bool)));
+	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileClose,    SLOT(setEnabled(bool)));
+	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileCloseAll, SLOT(setEnabled(bool)));
 
 	connect(_actions->fileNew, SIGNAL(triggered()), _editpane, SLOT(openNew()));
 	connect(_actions->fileOpen, SIGNAL(triggered()), this, SLOT(open()));
@@ -124,8 +131,40 @@ void MainWindow::open(const QString &filePath)
 {
 	QFileInfo info(filePath);
 	_currentDirectory = info.absolutePath();
-	_editpane->open(filePath);
-	_menubar->recentFilesList()->slot_FileOpened(filePath); // TODO use signals to communicate that a file opened?
+	const QString absoluteFilePath = info.absoluteFilePath();
+	const OpenResult openResult = _editpane->open(filePath);
+	switch (openResult)
+	{
+		case OpenSucceeded:
+		_menubar->recentFilesList()->slot_FileOpened(absoluteFilePath); // TODO use signals to communicate that a file opened?
+		break;
+
+		case OpenDoesntExist:
+		{
+			QMessageBox::StandardButton result = QMessageBox::question(this, "Create new file?", "\"" + absoluteFilePath + "\" doesn't exist. Create it?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+			if (result == QMessageBox::Yes)
+			{
+				_editpane->openNew(); // TODO have it named already
+				saveAs(absoluteFilePath);
+				// HACK TODO make some way of directly attempting to open the file with a name and save it,
+				// while checking for errors and outputting useful warnings. Currently it temporarily opens
+				// a new tab, saves it, and possibly closes it if the save *apparently* failed because the
+				// context wasn't updated. Also, as a side effect the "new XXX" number is incremented needlessly,
+				// and the "new XXX" tab is momentarily shown before an error message
+				if (_editpane->tabs()->tabContext(_editpane->tabs()->currentIndex())->filePath.size() == 0)
+					_editpane->closeTab();
+			}
+		}
+		break;
+
+		case OpenAccessDenied:
+		QMessageBox::warning(this, "Access denied", "Can not open file \"" + absoluteFilePath + "\"");
+		break;
+
+		case OpenReadError:
+		QMessageBox::warning(this, "Read error", "Can not read file \"" + absoluteFilePath + "\"");
+		break;
+	}
 }
 
 void MainWindow::save()
@@ -135,27 +174,9 @@ void MainWindow::save()
 		return;
 	TabContext * const context = tabs->tabContext(tabs->currentIndex());
 	if (context->filePath.size() == 0)
-	{
 		saveAs();
-		return;
-	}
-	QFile file(context->filePath);
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		QMessageBox msg;
-		msg.setText("Error opening \"" + context->filePath + "\" for writing");
-		msg.exec();
-		return;
-	}
-	FScintilla * const editor = _editpane->editor();
-	if (!editor->write(&file))
-	{
-		QMessageBox msg;
-		msg.setText("Error writing \"" + context->filePath + "\"");
-		msg.exec();
-		return;
-	}
-	editor->setModified(false);
+	else
+		saveAs(context->filePath);
 }
 
 void MainWindow::saveAs()
@@ -170,34 +191,30 @@ void MainWindow::saveAs()
 void MainWindow::saveAs(const QString &filePath)
 {
 	QFileInfo info(filePath);
-	EditPaneTabs * const tabs = _editpane->tabs();
-	FScintilla * const editor = _editpane->editor();
-	if (tabs->count() == 0)
-		return;
-	TabContext * const context = tabs->tabContext(tabs->currentIndex());
-	if (filePath != context->filePath)
+	const QString absoluteFilePath = info.absoluteFilePath();
+	const SaveResult saveResult = _editpane->saveAs(filePath);
+	switch (saveResult)
 	{
-		context->filePath = filePath;
-		tabs->setTabText(tabs->currentIndex(), info.fileName());
-		editor->setModified(true);
+		case SaveNothingToSave:
+		// NOTE: this shouldn't happen normally unless saveAs is programatically called rather than from an action
+		break;
+
+		case SaveSucceeded:
+		_currentDirectory = info.absolutePath(); // TODO make _currentDirectory context aware, rather than just reacting to last open/save
+		break;
+
+		case SaveAccessDenied:
+		QMessageBox::warning(this, "Access denied", "Error opening \"" + absoluteFilePath + "\" for writing");
+		break;
+
+		case SaveDirectoryDoesntExist:
+		QMessageBox::warning(this, "Directory doesn't exist", "Error opening \"" + absoluteFilePath + "\" for writing");
+		break;
+
+		case SaveWriteError:
+		QMessageBox::warning(this, "Write error", "Error writing \"" + absoluteFilePath + "\"");
+		break;
 	}
-	QFile file(context->filePath);
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		QMessageBox msg;
-		msg.setText("Error opening \"" + filePath + "\" for writing");
-		msg.exec();
-		return;
-	}
-	if (!editor->write(&file))
-	{
-		QMessageBox msg;
-		msg.setText("Error writing \"" + filePath + "\"");
-		msg.exec();
-		return;
-	}
-	editor->setModified(false);
-	_currentDirectory = info.absolutePath();
 }
 
 void MainWindow::_slot_SearchFind()

@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 #include <QMessageBox>
 #include <QSettings>
 //#include <QDebug>
@@ -72,7 +73,7 @@ void EditPane::openNew()
 	_tabs->setCurrentIndex(newIndex);
 }
 
-bool EditPane::open(const QString &filePath)
+OpenResult EditPane::open(const QString &filePath)
 {
 	TabContext * const context = new TabContext;
 	context->filePath = filePath;
@@ -82,25 +83,51 @@ bool EditPane::open(const QString &filePath)
 	QFile file(filePath);
 	if (!file.open(QIODevice::ReadOnly))
 	{
-		QMessageBox msg;
-		msg.setText("Error opening \"" + filePath + "\" for reading");
-		msg.exec();
 		_tabs->removeTab(newIndex);
-		return false;
+		if (!file.exists())
+			return OpenDoesntExist;
+		else
+			return OpenAccessDenied;
 	}
 	const bool succeeded = _editor->read(&file);
 	if (!succeeded)
 	{
-		QMessageBox msg;
-		msg.setText("Error reading \"" + filePath + "\"");
-		msg.exec();
 		_tabs->removeTab(newIndex);
+		return OpenReadError;
 	}
 	_editor->setModified(false); // TODO figure out why this makes it not modified, but then makes the undo option available unto a context switch :-/
 	_editor->setDocument(_editor->document()); // HACK to correct the above glitch
 	if (filePath.size() != 0)
 		_editor->setLexer(LexerPicker::chooseLexer(filename));
-	return succeeded;
+	return OpenSucceeded;
+}
+
+SaveResult EditPane::saveAs(const QString &filePath)
+{
+	QFileInfo info(filePath);
+	const QString absoluteFilePath = info.absoluteFilePath();
+
+	if (_tabs->count() == 0)
+		return SaveNothingToSave;
+	TabContext * const context = _tabs->tabContext(_tabs->currentIndex());
+	
+	QFile file(absoluteFilePath);
+	if (!file.open(QIODevice::WriteOnly))
+	{
+		if (!info.dir().exists())
+			return SaveDirectoryDoesntExist;
+		else
+			return SaveAccessDenied;
+	}
+	if (!_editor->write(&file))
+		return SaveWriteError;
+	if (absoluteFilePath != context->filePath)
+	{
+		context->filePath = absoluteFilePath;
+		_tabs->setTabText(_tabs->currentIndex(), info.fileName());
+	}
+	_editor->setModified(false);
+	return SaveSucceeded;
 }
 
 void EditPane::closeTab()
