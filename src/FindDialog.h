@@ -8,6 +8,7 @@ QT_BEGIN_NAMESPACE
 class QComboBox;
 class QCheckBox;
 class QRadioButton;
+class QTabBar;
 // class QPushButton;
 // class QGridLayout;
 QT_END_NAMESPACE
@@ -22,6 +23,9 @@ class FindDialog : public QDialog
 public:
 	FindDialog(FScintilla *editor, QWidget *parent = NULL);
 	~FindDialog();
+public slots:
+	void showFind();
+	void showReplace();
 protected slots:
 	void _slot_FindNext();
 	void _slot_Replace();
@@ -42,6 +46,7 @@ protected:
 
 	ComboBoxArea *comboboxArea;
 	ButtonsArea *buttonsArea;
+	QTabBar * _tabbar;
 	QComboBox *combobox;
 	QCheckBox *wholeWord;
 	QCheckBox *caseSensitive;

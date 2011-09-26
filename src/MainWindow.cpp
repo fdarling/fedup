@@ -98,7 +98,8 @@ void MainWindow::_SetupActions()
 	connect(_actions->editToggleBlockComment, SIGNAL(triggered()), e, SLOT(toggleCommented()));
 	connect(_actions->editTrimTrailingSpaces, SIGNAL(triggered()), e, SLOT(trimTrailingWhitespace()));
 
-	connect(_actions->searchFind, SIGNAL(triggered()), this, SLOT(_slot_SearchFind()));
+	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
+	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
 }
 
@@ -215,13 +216,6 @@ void MainWindow::saveAs(const QString &filePath)
 		QMessageBox::warning(this, "Write error", "Error writing \"" + absoluteFilePath + "\"");
 		break;
 	}
-}
-
-void MainWindow::_slot_SearchFind()
-{
-	_findDialog->show();
-	_findDialog->raise();
-	_findDialog->activateWindow();
 }
 
 void MainWindow::_slot_SearchGoTo()

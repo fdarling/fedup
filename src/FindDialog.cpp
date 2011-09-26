@@ -20,7 +20,7 @@
 
 #include <QApplication>
 #include <QFileDialog>
-
+#include <QDebug>
 namespace fedup {
 
 class FindDialog::ComboBoxArea
@@ -310,19 +310,19 @@ public:
 static QString ConvertFromExtended(const QString &query);
 
 FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt::Tool),
-	comboboxArea(NULL), combobox(NULL),
+	comboboxArea(NULL), _tabbar(NULL), combobox(NULL),
 	wholeWord(NULL), caseSensitive(NULL), wrapAround(NULL),
 	extendedMode(NULL), regularExpressionMode(NULL),
 	downDirection(NULL), _editor(editor)
 {
-	QTabBar * const tabbar = new QTabBar(this);
+	_tabbar = new QTabBar(this);
 	{
 		// tabbar->setDrawBase(false);
-		tabbar->setExpanding(false);
-		tabbar->addTab("Find");
-		tabbar->addTab("Replace");
-		tabbar->addTab("Mark");
-		tabbar->addTab("Find in Files");
+		_tabbar->setExpanding(false);
+		_tabbar->addTab("Find");
+		_tabbar->addTab("Replace");
+		_tabbar->addTab("Mark");
+		_tabbar->addTab("Find in Files");
 	}
 	QFrame * const frame = new QFrame(this);
 	frame->setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -345,7 +345,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 		vbox->addLayout(hbox);
 		vbox->addLayout(optionsArea.hbox2);
 	}
-	vboxOuter->addWidget(tabbar);
+	vboxOuter->addWidget(_tabbar);
 	vboxOuter->addWidget(frame);
 
 	combobox = comboboxArea->findCombobox;
@@ -356,8 +356,8 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	regularExpressionMode = optionsArea.regularExpressionMode;
 	downDirection = optionsArea.downDirection;
 
-	connect(tabbar, SIGNAL(currentChanged(int)), buttonsArea->stack, SLOT(setCurrentIndex(int)));
-	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
+	connect(_tabbar, SIGNAL(currentChanged(int)), buttonsArea->stack, SLOT(setCurrentIndex(int)));
+	connect(_tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
 	connect(buttonsArea->find->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->replace->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->findInFiles->closeButton, SIGNAL(clicked()), this, SLOT(close()));
@@ -373,13 +373,29 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(qApp, SIGNAL(focusChanged(QWidget *, QWidget *)), this, SLOT(_slot_FocusChanged(QWidget *, QWidget *)));
 
 	// to initialize it to the right state we call these slots as if the signals were triggered
-	_slot_CurrentChanged(tabbar->currentIndex());
+	_slot_CurrentChanged(_tabbar->currentIndex());
 	_slot_FindReplaceTextChanged();
 }
 
 FindDialog::~FindDialog()
 {
 	delete buttonsArea;
+}
+
+void FindDialog::showFind()
+{
+	_tabbar->setCurrentIndex(0); // TODO use an enum rather than magic numbers
+	show();
+	raise();
+	activateWindow();
+}
+
+void FindDialog::showReplace()
+{
+	_tabbar->setCurrentIndex(1); // TODO use an enum rather than magic numbers
+	show();
+	raise();
+	activateWindow();
 }
 
 bool FindDialog::_FindFirst(bool skipSelection)
@@ -406,8 +422,10 @@ bool FindDialog::_Replace()
 		_editor->getSelection(&lineFrom2, &indexFrom2, &lineTo2, &indexTo2);
 		if (lineFrom == lineFrom2 && indexFrom == indexFrom2 && lineTo == lineTo2 && indexTo == indexTo2)
 		{
+			qDebug() << "replaced line" << lineFrom;
 			_editor->replace(comboboxArea->replaceCombobox->currentText());
-			_FindFirst(false);
+			if (!_FindFirst(true))
+				_editor->setCursorPosition(lineTo, indexTo); // HACK to avoid an infinite loop
 		}
 	}
 	return true;
@@ -425,12 +443,17 @@ void FindDialog::_slot_Replace()
 
 void FindDialog::_slot_ReplaceAll()
 {
+	bool wrapAroundWasChecked = wrapAround->isChecked();
+	wrapAround->setChecked(false); // HACK, should be totally safe though
+
 	_editor->beginUndoAction();
 	while (_Replace())
 	{
 		/* NO-OP */
 	}
 	_editor->endUndoAction();
+
+	wrapAround->setChecked(wrapAroundWasChecked);
 }
 
 void FindDialog::_slot_Browse()
@@ -478,7 +501,7 @@ void FindDialog::_slot_FindReplaceTextChanged()
 	buttonsArea->replace->findNextButton->setEnabled(findEnabled);
 	buttonsArea->mark->markAllButton->setEnabled(findEnabled);
 	buttonsArea->findInFiles->findAllButton->setEnabled(findEnabled);
-	
+
 	const bool replaceEnabled = (comboboxArea->replaceCombobox->currentText().size() != 0) && findEnabled;
 	buttonsArea->replace->replaceButton->setEnabled(replaceEnabled);
 	buttonsArea->replace->replaceAllButton->setEnabled(replaceEnabled);

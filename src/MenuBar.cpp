@@ -58,7 +58,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		// searchMenu->addAction("Select and Find Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+Shift+F3"));
 		// searchMenu->addAction("Find (Volatile) Next", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+Alt+F3"));
 		// searchMenu->addAction("Find (Volatile) Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+Alt+Shift+F3"));
-	//searchMenu->addAction("Replace...", tabs, SLOT(slot_SearchReplace()), QKeySequence("Ctrl+H"));
+		searchMenu->addAction(actions->searchReplace);
 		// searchMenu->addAction("Incremental Search", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+Alt+I"));
 		// searchMenu->addAction("Search Results Window", tabs, SLOT(slot_FindPrev()), QKeySequence("F7"));
 		// searchMenu->addAction("Next Search Result", tabs, SLOT(slot_FindPrev()), QKeySequence("F4"));

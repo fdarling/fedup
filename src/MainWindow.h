@@ -28,7 +28,6 @@ public slots:
 	void saveAs();
 	void saveAs(const QString &filePath);
 protected slots:
-	void _slot_SearchFind();
 	void _slot_SearchGoTo();
 protected:
 	void _SetupActions();

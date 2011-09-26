@@ -6,6 +6,7 @@
 		<file>icons/cut.bmp</file>
 		<file>icons/delete.ico</file>
 		<file>icons/find.bmp</file>
+		<file>icons/findReplace.bmp</file>
 		<file>icons/newFile.bmp</file>
 		<file>icons/openFile.bmp</file>
 		<file>icons/paste.bmp</file>

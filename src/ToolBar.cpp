@@ -18,6 +18,7 @@ ToolBar::ToolBar(Actions *actions, QWidget *parent) : QToolBar(parent)
 	addAction(actions->editRedo);
 	addSeparator();
 	addAction(actions->searchFind);
+	addAction(actions->searchReplace);
 }
 
 ToolBar::~ToolBar()

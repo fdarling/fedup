@@ -40,6 +40,7 @@ public:
 	QAction *editTrimTrailingSpaces;
 
 	QAction *searchFind;
+	QAction *searchReplace;
 	QAction *searchGoTo;
 protected:
 	QAction * GenAction(const QString &name, const QString &seq, const QString &iconFilename);
