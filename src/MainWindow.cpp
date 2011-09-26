@@ -99,6 +99,7 @@ void MainWindow::_SetupActions()
 	connect(_actions->editTrimTrailingSpaces, SIGNAL(triggered()), e, SLOT(trimTrailingWhitespace()));
 
 	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
+	connect(_actions->searchFindInFiles, SIGNAL(triggered()), _findDialog, SLOT(showFindInFiles()));
 	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
 }

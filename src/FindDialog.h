@@ -26,12 +26,16 @@ public:
 public slots:
 	void showFind();
 	void showReplace();
+	void showMark();
+	void showFindInFiles();
 protected slots:
 	void _slot_FindNext();
 	void _slot_Replace();
 	void _slot_ReplaceAll();
-	void _slot_FocusChanged(QWidget *old, QWidget *now);
+	void _slot_FindInFiles();
+	void _slot_ReplaceInFiles();
 	void _slot_Browse();
+	void _slot_FocusChanged(QWidget *old, QWidget *now);
 	void _slot_CurrentChanged(int index);
 	void _slot_FindReplaceTextChanged();
 protected:
@@ -40,6 +44,7 @@ protected:
 
 	bool _FindFirst(bool skipSelection = true);
 	bool _Replace();
+	void _FindInFiles(bool replacing = false);
 
 	class ComboBoxArea;
 	class ButtonsArea;

@@ -51,7 +51,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 	{
 		QMenu * const searchMenu = this->addMenu("&Search");
 		searchMenu->addAction(actions->searchFind);
-		// searchMenu->addAction("Find in Files...", this, SLOT(slot_SearchFindInFiles()), QKeySequence("Ctrl+Shift+F"));
+		searchMenu->addAction(actions->searchFindInFiles);
 // searchMenu->addAction("Find Next", tabs, SLOT(slot_FindNext()), QKeySequence("F3"));
 // searchMenu->addAction("Find Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Shift+F3"));
 		// searchMenu->addAction("Select and Find Next", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+F3"));

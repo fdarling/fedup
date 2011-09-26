@@ -37,6 +37,7 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	editTrimTrailingSpaces = GenAction("Trim trailing spaces",   "",                "");
 
 	searchFind = GenAction("&Find...", "Ctrl+F", "find.bmp");
+	searchFindInFiles = GenAction("Find in Files...", "Ctrl+Shift+F", "");
 	searchReplace = GenAction("&Replace...", "Ctrl+R", "findReplace.bmp");
 	searchGoTo = GenAction("&Go to...", "Ctrl+G", "");
 }

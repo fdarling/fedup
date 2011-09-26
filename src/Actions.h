@@ -40,6 +40,7 @@ public:
 	QAction *editTrimTrailingSpaces;
 
 	QAction *searchFind;
+	QAction *searchFindInFiles;
 	QAction *searchReplace;
 	QAction *searchGoTo;
 protected:

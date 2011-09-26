@@ -20,6 +20,7 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QDirIterator>
 #include <QDebug>
 namespace fedup {
 
@@ -88,6 +89,8 @@ FindDialog::ComboBoxArea::ComboBoxArea(QWidget *parent) :
 
 	grid->setColumnStretch(1, 1);
 	grid->setRowStretch(4, 1);
+
+	filtersCombobox->lineEdit()->setText("*.*");
 }
 
 class FindButtonsArea : public QWidget
@@ -183,25 +186,40 @@ public:
 class FindInFilesButtonsArea : public QWidget
 {
 public:
-	FindInFilesButtonsArea(QWidget *parent) : QWidget(parent)
+	FindInFilesButtonsArea(QWidget *parent) :
+		QWidget(parent),
+		findAllButton(NULL),
+		replaceAllButton(NULL),
+		followCurrentDocCheckbox(NULL),
+		subfoldersCheckbox(NULL),
+		hiddenFoldersCheckbox(NULL),
+		closeButton(NULL)
 	{
 		QVBoxLayout * const vbox = new QVBoxLayout(this);
 		vbox->setSpacing(0);
 		vbox->setContentsMargins(0, 0, 0, 0);
 		findAllButton = new QPushButton("Find All", this);
 		replaceAllButton = new QPushButton("Replace in Files", this);
+		followCurrentDocCheckbox = new QCheckBox("Follow current doc.", this);
+		subfoldersCheckbox = new QCheckBox("In all su&b-folders", this);
+		hiddenFoldersCheckbox = new QCheckBox("In &hidden folders", this);
 		closeButton = new QPushButton("Close", this);
 		vbox->addWidget(findAllButton);
 		vbox->addWidget(replaceAllButton);
-		vbox->addWidget(new QCheckBox("Follow current doc.", this));
-		vbox->addWidget(new QCheckBox("In all su&b-folders", this));
-		vbox->addWidget(new QCheckBox("In &hidden folders", this));
+		vbox->addWidget(followCurrentDocCheckbox);
+		vbox->addWidget(subfoldersCheckbox);
+		vbox->addWidget(hiddenFoldersCheckbox);
 		vbox->addStretch();
 		vbox->addWidget(closeButton);
+
+		subfoldersCheckbox->setChecked(true);
 	}
 public:
 	QPushButton * findAllButton;
 	QPushButton * replaceAllButton;
+	QCheckBox * followCurrentDocCheckbox;
+	QCheckBox * subfoldersCheckbox;
+	QCheckBox * hiddenFoldersCheckbox;
 	QPushButton * closeButton;
 };
 
@@ -360,6 +378,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(_tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
 	connect(buttonsArea->find->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->replace->closeButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(buttonsArea->findInFiles->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindInFiles()));
 	connect(buttonsArea->findInFiles->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->mark->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->find->findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
@@ -398,6 +417,22 @@ void FindDialog::showReplace()
 	activateWindow();
 }
 
+void FindDialog::showMark()
+{
+	_tabbar->setCurrentIndex(2); // TODO use an enum rather than magic numbers
+	show();
+	raise();
+	activateWindow();
+}
+
+void FindDialog::showFindInFiles()
+{
+	_tabbar->setCurrentIndex(3); // TODO use an enum rather than magic numbers
+	show();
+	raise();
+	activateWindow();
+}
+
 bool FindDialog::_FindFirst(bool skipSelection)
 {
 	if (combobox->currentText().size() == 0)
@@ -422,13 +457,33 @@ bool FindDialog::_Replace()
 		_editor->getSelection(&lineFrom2, &indexFrom2, &lineTo2, &indexTo2);
 		if (lineFrom == lineFrom2 && indexFrom == indexFrom2 && lineTo == lineTo2 && indexTo == indexTo2)
 		{
-			qDebug() << "replaced line" << lineFrom;
 			_editor->replace(comboboxArea->replaceCombobox->currentText());
 			if (!_FindFirst(true))
 				_editor->setCursorPosition(lineTo, indexTo); // HACK to avoid an infinite loop
 		}
 	}
 	return true;
+}
+
+void FindDialog::_FindInFiles(bool replacing)
+{
+	qDebug() << "_FindInFiles():";
+	QDir::Filters dir_filters = QDir::Files | QDir::Readable;
+	if (replacing)
+		dir_filters |= QDir::Writable;
+	if (buttonsArea->findInFiles->hiddenFoldersCheckbox->isChecked()) // TODO change this to a hiddenCheckbox and drop the folders specification?
+		dir_filters |= QDir::Hidden;
+	QDirIterator::IteratorFlags iterator_flags = QDirIterator::FollowSymlinks;
+	if (buttonsArea->findInFiles->subfoldersCheckbox->isChecked())
+		iterator_flags |= QDirIterator::Subdirectories;
+	const QStringList filters = comboboxArea->filtersCombobox->currentText().split(QRegExp("\\s+"));
+	QDirIterator it(comboboxArea->directoryCombobox->currentText(), filters, dir_filters, iterator_flags);
+	while (it.hasNext())
+	{
+		const QString filePath = it.next();
+		qDebug() << "\tSearching through file:" << filePath;
+	}
+	qDebug () << "Done crawling directories";
 }
 
 void FindDialog::_slot_FindNext()
@@ -454,6 +509,16 @@ void FindDialog::_slot_ReplaceAll()
 	_editor->endUndoAction();
 
 	wrapAround->setChecked(wrapAroundWasChecked);
+}
+
+void FindDialog::_slot_FindInFiles()
+{
+	_FindInFiles(false);
+}
+
+void FindDialog::_slot_ReplaceInFiles()
+{
+	_FindInFiles(true);
 }
 
 void FindDialog::_slot_Browse()
