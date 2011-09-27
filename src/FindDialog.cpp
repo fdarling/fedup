@@ -21,7 +21,9 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QDirIterator>
+#include <QScopedPointer>
 #include <QDebug>
+
 namespace fedup {
 
 class FindDialog::ComboBoxArea
@@ -277,7 +279,7 @@ public:
 			vbox2->setSpacing(0);
 			// vbox2->setContentsMargins(0, 0, 0, 0);
 			extendedMode = new QRadioButton("E&xtended (\\n, \\r, \\t, \\0, \\x...)", parent);
-			regularExpressionMode = new QRadioButton("Regular e&xpression", parent);
+			regularExpressionMode = new QRadioButton("Re&gular expression", parent);
 			vbox2->addWidget(normalMode);
 			vbox2->addWidget(extendedMode);
 			vbox2->addWidget(regularExpressionMode);
@@ -331,7 +333,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	comboboxArea(NULL), _tabbar(NULL), combobox(NULL),
 	wholeWord(NULL), caseSensitive(NULL), wrapAround(NULL),
 	extendedMode(NULL), regularExpressionMode(NULL),
-	downDirection(NULL), _editor(editor)
+	downDirection(NULL), _editor(editor), _hiddenEditor(NULL)
 {
 	_tabbar = new QTabBar(this);
 	{
@@ -349,6 +351,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	comboboxArea = new ComboBoxArea(frame);
 	OptionsArea optionsArea(frame);
 	buttonsArea = new ButtonsArea(frame);
+	_hiddenEditor = new FScintilla;
 
 	QVBoxLayout * const vboxOuter = new QVBoxLayout(this);
 	vboxOuter->setSpacing(0);
@@ -399,6 +402,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 FindDialog::~FindDialog()
 {
 	delete buttonsArea;
+	delete _hiddenEditor;
 }
 
 void FindDialog::showFind()
@@ -482,6 +486,22 @@ void FindDialog::_FindInFiles(bool replacing)
 	{
 		const QString filePath = it.next();
 		qDebug() << "\tSearching through file:" << filePath;
+		_hiddenEditor->setDocument(QsciDocument());
+		QFile file(filePath);
+
+		if (file.open(QIODevice::ReadOnly) && _hiddenEditor->read(&file))
+		{
+			for (bool foundSomething = _hiddenEditor->findFirst(extendedMode->isChecked() ? ConvertFromExtended(combobox->currentText()) : combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), false, true, -1, -1, false); foundSomething; foundSomething = _hiddenEditor->findNext())
+			{
+				int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
+				_hiddenEditor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+				if (lineFrom == lineTo)
+					qDebug() << "\t\tLine " << (lineFrom + 1) << ":" << _hiddenEditor->selectedText();
+				else
+					qDebug() << "\t\tLines" << (lineFrom + 1) << "-" << (lineTo + 1) << ":" << _hiddenEditor->selectedText();
+			}
+		}
+		_hiddenEditor->setDocument(QsciDocument());
 	}
 	qDebug () << "Done crawling directories";
 }

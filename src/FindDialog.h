@@ -60,6 +60,7 @@ protected:
 	QRadioButton *regularExpressionMode;
 	QRadioButton *downDirection;
 	FScintilla *_editor;
+	FScintilla *_hiddenEditor;
 	QRect _geometry;
 };
 
