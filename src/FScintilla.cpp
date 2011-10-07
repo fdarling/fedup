@@ -106,7 +106,11 @@ FScintilla::~FScintilla()
 
 void FScintilla::setDocument(const QsciDocument &doc)
 {
+	const bool wasModified = isModified();
 	QsciScintilla::setDocument(doc);
+	const bool nowModified = isModified();
+	if (wasModified != nowModified)
+		emit modificationChanged(nowModified); // HACK workaround for QsciScintilla not doing this for us >.<
 	_RefreshCurrentLineMarker(_currentLine);
 	_slot_TextChanged();
 }
@@ -438,6 +442,7 @@ void FScintilla::_slot_TextChanged()
 
 void FScintilla::_slot_CursorPositionChanged(int line, int index)
 {
+	Q_UNUSED(index);
 	const int newPos = SendScintilla(SCI_GETCURRENTPOS);
 	const int newLine = line;
 	const bool needsNotification = (newPos != _currentOffset);

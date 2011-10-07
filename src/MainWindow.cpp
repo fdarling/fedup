@@ -14,7 +14,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
-
+// #include <QDebug>
 namespace fedup {
 
 extern const QString FILE_TYPES_STRING; // defined at the bottom of this file
@@ -107,6 +107,7 @@ void MainWindow::_SetupActions()
 void MainWindow::_SetupConnections()
 {
 	FScintilla * const e = _editpane->editor();
+	EditPaneTabs * const tabs = _editpane->tabs();
 
 	connect(e, SIGNAL(cursorPositionChanged(int, int)), _statusbar, SLOT(slot_SetCursorPosition(int, int)));
 	connect(e, SIGNAL(selectionLengthChanged(int)), _statusbar, SLOT(slot_SetSelectionLength(int)));
@@ -120,6 +121,8 @@ void MainWindow::_SetupConnections()
 	connect(_gotoDialog, SIGNAL(goToOffset(int)), e, SLOT(goToOffset(int)));
 
 	connect(_menubar->recentFilesList(), SIGNAL(recentFileClicked(const QString &)), this, SLOT(open(const QString &)));
+	
+	connect(tabs, SIGNAL(tabChanged(TabContext *, TabContext *)), this, SLOT(_slot_TabChanged(TabContext *, TabContext *)));
 }
 
 void MainWindow::open()
@@ -224,6 +227,20 @@ void MainWindow::_slot_SearchGoTo()
 	_gotoDialog->show();
 	_gotoDialog->raise();
 	_gotoDialog->activateWindow();
+}
+
+void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
+{
+	Q_UNUSED(oldContext);
+	// TODO deal with unsaved (new) files
+	// TODO have the editpane emit a signal when a file's path is changed
+	// qDebug() << "Context changed from " << (oldContext ? oldContext->filePath : QString("<NULL>")) << " to " << (context ? context->filePath : QString("<NULL>"));
+	// FScintilla * const e = _editpane->editor();
+	// qDebug() << "modified?" << e->isModified();
+	if (context)
+		setWindowTitle(context->filePath + " - fedup");
+	else
+		setWindowTitle("fedup");
 }
 
 } // namespace fedup

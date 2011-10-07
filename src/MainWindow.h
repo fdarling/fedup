@@ -14,6 +14,7 @@ class StatusBar;
 class EditPane;
 class FindDialog;
 class GoToDialog;
+class TabContext;
 
 class MainWindow : public QMainWindow
 {
@@ -29,6 +30,7 @@ public slots:
 	void saveAs(const QString &filePath);
 protected slots:
 	void _slot_SearchGoTo();
+	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 protected:
 	void _SetupActions();
 	void _SetupConnections();
