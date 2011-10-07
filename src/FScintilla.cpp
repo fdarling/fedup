@@ -66,6 +66,7 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 		f.setStyleStrategy(QFont::NoAntialias);
 		f.setStyleHint(QFont::TypeWriter);
 		setFont(f);
+		setMarginsFont(f);
 	}
 	//SendScintilla(SCI_SETFONTQUALITY, SC_EFF_QUALITY_NON_ANTIALIASED); // TODO make a preprocessor if to detect windows and enable this
 
@@ -108,6 +109,13 @@ void FScintilla::setDocument(const QsciDocument &doc)
 {
 	const bool wasModified = isModified();
 	QsciScintilla::setDocument(doc);
+
+	// TODO figure out why the font keeps getting reset!
+	QFont f("Courier New", 10);
+	setFont(f);
+	setMarginsFont(f);
+	setTabWidth(4);
+
 	const bool nowModified = isModified();
 	if (wasModified != nowModified)
 		emit modificationChanged(nowModified); // HACK workaround for QsciScintilla not doing this for us >.<
