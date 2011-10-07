@@ -2,6 +2,7 @@
 #define FEDUP_EDITPANE_H
 
 #include <QWidget>
+#include <QMultiMap>
 #include "globals.h"
 
 QT_BEGIN_NAMESPACE
@@ -39,8 +40,11 @@ protected slots:
 	void _slot_TabRemoved(TabContext *context);
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 protected:
+	typedef QMultiMap<QString, TabContext*> FilePathToContextMap;
+
 	EditPaneTabs *_tabs;
 	FScintilla *_editor;
+	FilePathToContextMap _openFiles;
 	static int _nextNewIndex;
 };
 

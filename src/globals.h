@@ -6,6 +6,7 @@ namespace fedup {
 enum OpenResult
 {
 	OpenSucceeded,
+	OpenAlreadyOpen,
 	OpenDoesntExist,
 	OpenAccessDenied,
 	OpenReadError

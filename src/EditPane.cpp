@@ -75,31 +75,49 @@ void EditPane::openNew()
 
 OpenResult EditPane::open(const QString &filePath)
 {
-	TabContext * const context = new TabContext;
-	context->filePath = filePath;
-	const QString filename = QFileInfo(filePath).fileName();
-	const int newIndex = _tabs->addTab(filename, context);
-	_tabs->setCurrentIndex(newIndex);
-	QFile file(filePath);
-	if (!file.open(QIODevice::ReadOnly))
+	const QFileInfo info(filePath);
+	const QString absoluteFilePath = info.absoluteFilePath();
+	FilePathToContextMap::const_iterator it = _openFiles.find(absoluteFilePath);
+	if (it != _openFiles.end())
 	{
-		_tabs->removeTab(newIndex);
-		if (!file.exists())
-			return OpenDoesntExist;
-		else
-			return OpenAccessDenied;
+		int i = 0;
+		for (; i < _tabs->count(); i++)
+		{
+			if (_tabs->tabContext(i) == *it)
+				break;
+		}
+		_tabs->setCurrentIndex(i);
+		return OpenAlreadyOpen;
 	}
-	const bool succeeded = _editor->read(&file);
-	if (!succeeded)
+	else
 	{
-		_tabs->removeTab(newIndex);
-		return OpenReadError;
+		TabContext * const context = new TabContext;
+		context->filePath = absoluteFilePath;
+		_openFiles.insert(absoluteFilePath, context);
+		const QString filename = info.fileName();
+		const int newIndex = _tabs->addTab(filename, context);
+		_tabs->setCurrentIndex(newIndex);
+		QFile file(absoluteFilePath);
+		if (!file.open(QIODevice::ReadOnly))
+		{
+			_tabs->removeTab(newIndex);
+			if (!file.exists())
+				return OpenDoesntExist;
+			else
+				return OpenAccessDenied;
+		}
+		const bool succeeded = _editor->read(&file);
+		if (!succeeded)
+		{
+			_tabs->removeTab(newIndex);
+			return OpenReadError;
+		}
+		_editor->setModified(false); // TODO figure out why this makes it not modified, but then makes the undo option available unto a context switch :-/
+		_editor->setDocument(_editor->document()); // HACK to correct the above glitch
+		if (absoluteFilePath.size() != 0)
+			_editor->setLexer(LexerPicker::chooseLexer(filename));
+		return OpenSucceeded;
 	}
-	_editor->setModified(false); // TODO figure out why this makes it not modified, but then makes the undo option available unto a context switch :-/
-	_editor->setDocument(_editor->document()); // HACK to correct the above glitch
-	if (filePath.size() != 0)
-		_editor->setLexer(LexerPicker::chooseLexer(filename));
-	return OpenSucceeded;
 }
 
 SaveResult EditPane::saveAs(const QString &filePath)
@@ -110,7 +128,7 @@ SaveResult EditPane::saveAs(const QString &filePath)
 	if (_tabs->count() == 0)
 		return SaveNothingToSave;
 	TabContext * const context = _tabs->tabContext(_tabs->currentIndex());
-	
+
 	QFile file(absoluteFilePath);
 	if (!file.open(QIODevice::WriteOnly))
 	{
@@ -123,7 +141,10 @@ SaveResult EditPane::saveAs(const QString &filePath)
 		return SaveWriteError;
 	if (absoluteFilePath != context->filePath)
 	{
+		// TODO emit a signal?
+		_openFiles.remove(context->filePath, context);
 		context->filePath = absoluteFilePath;
+		_openFiles.insert(absoluteFilePath, context);
 		_tabs->setTabText(_tabs->currentIndex(), info.fileName());
 	}
 	_editor->setModified(false);
@@ -149,6 +170,8 @@ void EditPane::_slot_TabCloseRequested(int index)
 void EditPane::_slot_TabRemoved(TabContext *context)
 {
 	//qDebug() << ">> Tab removed:" << context;
+	if (context->filePath.size() != 0)
+		_openFiles.remove(context->filePath, context);
 	delete context;
 }
 

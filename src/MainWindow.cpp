@@ -121,7 +121,7 @@ void MainWindow::_SetupConnections()
 	connect(_gotoDialog, SIGNAL(goToOffset(int)), e, SLOT(goToOffset(int)));
 
 	connect(_menubar->recentFilesList(), SIGNAL(recentFileClicked(const QString &)), this, SLOT(open(const QString &)));
-	
+
 	connect(tabs, SIGNAL(tabChanged(TabContext *, TabContext *)), this, SLOT(_slot_TabChanged(TabContext *, TabContext *)));
 }
 
@@ -169,6 +169,9 @@ void MainWindow::open(const QString &filePath)
 		case OpenReadError:
 		QMessageBox::warning(this, "Read error", "Can not read file \"" + absoluteFilePath + "\"");
 		break;
+
+		case OpenAlreadyOpen:
+		break;
 	}
 }
 
@@ -205,7 +208,7 @@ void MainWindow::saveAs(const QString &filePath)
 		break;
 
 		case SaveSucceeded:
-		_currentDirectory = info.absolutePath(); // TODO make _currentDirectory context aware, rather than just reacting to last open/save
+		_currentDirectory = info.absolutePath();
 		break;
 
 		case SaveAccessDenied:
@@ -238,7 +241,11 @@ void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 	// FScintilla * const e = _editpane->editor();
 	// qDebug() << "modified?" << e->isModified();
 	if (context)
+	{
 		setWindowTitle(context->filePath + " - fedup");
+		if (context->filePath.size() != 0)
+			_currentDirectory = QFileInfo(context->filePath).absolutePath();
+	}
 	else
 		setWindowTitle("fedup");
 }
