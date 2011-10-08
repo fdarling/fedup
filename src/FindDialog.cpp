@@ -481,7 +481,16 @@ void FindDialog::_FindInFiles(bool replacing)
 	if (buttonsArea->findInFiles->subfoldersCheckbox->isChecked())
 		iterator_flags |= QDirIterator::Subdirectories;
 	const QStringList filters = comboboxArea->filtersCombobox->currentText().split(QRegExp("\\s+"));
-	QDirIterator it(comboboxArea->directoryCombobox->currentText(), filters, dir_filters, iterator_flags);
+	bool useFilters = (filters.size() != 0);
+	for (QStringList::const_iterator it = filters.begin(); it != filters.end(); ++it)
+	{
+		if (*it == "*" || *it == "*.*")
+		{
+			useFilters = false;
+			break;
+		}
+	}
+	QDirIterator it(comboboxArea->directoryCombobox->currentText(), useFilters ? filters : QStringList(), dir_filters, iterator_flags);
 	while (it.hasNext())
 	{
 		const QString filePath = it.next();

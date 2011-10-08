@@ -10,7 +10,10 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QSettings>
-//#include <QDebug>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QUrl>
+// #include <QDebug>
 
 #include <Qsci/qscilexer.h>
 
@@ -20,6 +23,8 @@ int EditPane::_nextNewIndex = 1;
 
 EditPane::EditPane(QWidget *parent) : QWidget(parent), _tabs(NULL)
 {
+	setAcceptDrops(true);
+
 	QVBoxLayout * const vbox = new QVBoxLayout(this);
 	vbox->setSpacing(0);
 	vbox->setContentsMargins(0, 0, 0, 0);
@@ -196,6 +201,30 @@ void EditPane::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 		delete lexer;
 	}
 	_editor->setVisible(context);
+}
+
+void EditPane::dragEnterEvent(QDragEnterEvent *event)
+{
+	// qDebug() << event->mimeData()->formats();
+	if (event->mimeData()->hasFormat("text/uri-list"))
+		event->acceptProposedAction();
+}
+
+void EditPane::dropEvent(QDropEvent *event)
+{
+	if (event->mimeData()->hasUrls())
+	{
+		const QList<QUrl> urlList = event->mimeData()->urls();
+
+		for (QList<QUrl>::const_iterator it = urlList.begin(); it != urlList.end(); ++it)
+		{
+			const QString filePath = it->toLocalFile();
+			const QFileInfo info(filePath);
+			if (info.isFile())
+				open(filePath);
+		}
+	}
+	event->acceptProposedAction();
 }
 
 } // namespace fedup

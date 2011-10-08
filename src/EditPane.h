@@ -40,6 +40,8 @@ protected slots:
 	void _slot_TabRemoved(TabContext *context);
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
 	typedef QMultiMap<QString, TabContext*> FilePathToContextMap;
 
 	EditPaneTabs *_tabs;
