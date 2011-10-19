@@ -37,6 +37,7 @@ protected slots:
 	void _slot_CursorPositionChanged(int line, int index);
 	void _slot_SelectionChanged();
 protected:
+	int _LineLength(int line);
 	void _RefreshCurrentLineMarker();
 	void _RefreshCurrentLineMarker(int newLine);
 	void _RefreshSmartHighlighting();

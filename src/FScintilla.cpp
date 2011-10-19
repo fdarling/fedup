@@ -206,7 +206,7 @@ void FScintilla::deleteLine()
 		removeSelectedText();
 		_lastDeletedLine = line;
 	}
-	setCursorPosition(lineFrom, indexTo);
+	setCursorPosition(line, qMax(0, qMin(indexTo, _LineLength(line))));
 	endUndoAction();
 }
 
@@ -377,6 +377,11 @@ void FScintilla::trimTrailingWhitespace()
 	SendScintilla(SCI_GOTOPOS, SendScintilla(SCI_FINDCOLUMN, currentLine, currentColumn));
 	verticalScrollBar()->setValue(scrollPos);
 	endUndoAction();
+}
+
+int FScintilla::_LineLength(int line)
+{
+	return SendScintilla(SCI_GETLINEENDPOSITION, line) - SendScintilla(SCI_POSITIONFROMLINE, line);
 }
 
 void FScintilla::_RefreshCurrentLineMarker(int newLine)
