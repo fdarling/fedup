@@ -43,7 +43,7 @@ static bool IsWord(const QString &word)
 	return true;
 }
 
-FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLength(0), _lineCount(0), _length(0), _currentLine(0), _currentOffset(0), _undoAvailable(false), _redoAvailable(false)
+FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLength(0), _lineCount(0), _length(0), _currentLine(0), _currentOffset(0), _undoAvailable(false), _redoAvailable(false), _lastDeletedLine(-1)
 {
 	setMarginLineNumbers(1, true);
 	setMarginWidth(1, 50);
@@ -73,6 +73,11 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 	// SendScintilla(SCI_SETHSCROLLBAR, false);
 	// SendScintilla(SCI_SETSCROLLWIDTH, 800);
 	// SendScintilla(SCI_SETSCROLLWIDTHTRACKING, true);
+
+	// TODO figure out a way to get Qt change the size of the scroll handle
+	// when I override it's width, I fear I may have to rewrite QsciScintilla :-/
+	// SendScintilla(SCI_SETSCROLLWIDTHTRACKING, 1);
+	// SendScintilla(SCI_SETSCROLLWIDTH, 1);
 
 	SendScintilla(SCI_SETTWOPHASEDRAW, true);
 	SendScintilla(SCI_INDICSETSTYLE, SCE_UNIVERSAL_FOUND_STYLE_SMART, INDIC_ROUNDBOX);
@@ -170,15 +175,52 @@ void FScintilla::duplicateLines()
 
 void FScintilla::deleteLine()
 {
+	int lineFrom = -1, indexFrom = 0, lineTo = -1, indexTo = 0;
+	getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+	if (lineFrom == -1)
+	{
+		getCursorPosition(&lineFrom, &indexFrom);
+		lineTo = lineFrom;
+		indexTo = indexFrom;
+	}
+	else if (lineTo < lineFrom)
+	{
+		qSwap(lineFrom, lineTo);
+		qSwap(indexFrom, indexTo);
+	}
+
+	const int line = lineFrom;
+	beginUndoAction();
+	for (int i = lineFrom; i <= lineTo; i++)
+	{
+		if (line == lines() - 1)
+			setSelection(line, 0, line, lineLength(line));
+		else
+			setSelection(line, 0, line+1, 0);
+		if (_lastDeletedLine == line)
+			_deletedLines += selectedText();
+		else
+			_deletedLines = selectedText();
+		if (!_deletedLines.endsWith('\n'))
+			_deletedLines += '\n';
+		removeSelectedText();
+		_lastDeletedLine = line;
+	}
+	setCursorPosition(lineFrom, indexTo);
+	endUndoAction();
+}
+
+void FScintilla::undeleteLines()
+{
 	int line = -1, oldColumn = 0;
 	getCursorPosition(&line, &oldColumn);
-	const int linelength = lineLength(line);
 
 	beginUndoAction();
-	setSelection(line, 0, line, linelength);
-	removeSelectedText();
-	setCursorPosition(line, oldColumn);
+	insertAt(_deletedLines, line, 0);
+	setCursorPosition(line + _deletedLines.count('\n'), oldColumn);
 	endUndoAction();
+
+	_lastDeletedLine = -1;
 }
 
 void FScintilla::moveLineUp()

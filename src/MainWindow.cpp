@@ -93,6 +93,7 @@ void MainWindow::_SetupActions()
 	connect(_actions->editSelectAll, SIGNAL(triggered()), e, SLOT(selectAll()));
 	connect(_actions->editDuplicateLines, SIGNAL(triggered()), e, SLOT(duplicateLines()));
 	connect(_actions->editDeleteLine, SIGNAL(triggered()), e, SLOT(deleteLine()));
+	connect(_actions->editUndeleteLines, SIGNAL(triggered()), e, SLOT(undeleteLines()));
 	connect(_actions->editMoveLineUp, SIGNAL(triggered()), e, SLOT(moveLineUp()));
 	connect(_actions->editMoveLineDown, SIGNAL(triggered()), e, SLOT(moveLineDown()));
 	connect(_actions->editToggleBlockComment, SIGNAL(triggered()), e, SLOT(toggleCommented()));

@@ -1,5 +1,5 @@
 - Add recent files menu
-- Make deleting multiple lines at once possible with CTRL+K, and for River make consecutive deleted lines be accumulated? Paste with CTRL+U like GNU's nano
+- Fix coalescing of line deletions, especially across different documents
 - Finish "Find in Files"
 - Lexer dropdown, Macro dropdown, and the rest of the Search drop down
 - Make more menus items aware of when they won't actually do anything and disable them appropriately, Move Line Up for example, and Find when there are no files open

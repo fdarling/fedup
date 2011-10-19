@@ -26,6 +26,7 @@ public slots:
 	void goToOffset(int offset);
 	void duplicateLines();
 	void deleteLine();
+	void undeleteLines();
 	void moveLineUp();
 	void moveLineDown();
 	void toggleCommented();
@@ -55,7 +56,8 @@ protected:
 		SmartHighlightedRange() : firstLine(-1), lastLine(-1) {}
 
 		bool highlighting() const {return word.size() > 0 && word[0] != '\0';}
-		void clear() {
+		void clear()
+		{
 			firstLine = -1;
 			lastLine = -1;
 			word.clear();
@@ -65,6 +67,8 @@ protected:
 		int lastLine;
 		QByteArray word;
 	} _smartHighlightedRange;
+	int _lastDeletedLine;
+	QString _deletedLines;
 };
 
 } // namespace fedup

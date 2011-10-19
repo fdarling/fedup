@@ -39,6 +39,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		editMenu->addSeparator();
 		editMenu->addAction(actions->editDuplicateLines);
 		editMenu->addAction(actions->editDeleteLine);
+		editMenu->addAction(actions->editUndeleteLines);
 		editMenu->addAction(actions->editMoveLineUp);
 		editMenu->addAction(actions->editMoveLineDown);
 		editMenu->addSeparator();

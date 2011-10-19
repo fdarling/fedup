@@ -34,6 +34,7 @@ public:
 	QAction *editSelectAll;
 	QAction *editDuplicateLines;
 	QAction *editDeleteLine;
+	QAction *editUndeleteLines;
 	QAction *editMoveLineUp;
 	QAction *editMoveLineDown;
 	QAction *editToggleBlockComment;

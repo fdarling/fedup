@@ -31,6 +31,7 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	editSelectAll          = GenAction("Select A&ll",            "Ctrl+A",          "");
 	editDuplicateLines     = GenAction("Duplicate current line", "Ctrl+D",          "");
 	editDeleteLine         = GenAction("Delete current line",    "Ctrl+K",          "");
+	editUndeleteLines      = GenAction("Undelete lines",         "Ctrl+U",          "");
 	editMoveLineUp         = GenAction("Move Up Current Line",   "Ctrl+Shift+Up",   "");
 	editMoveLineDown       = GenAction("Move Down Current Line", "Ctrl+Shift+Down", "");
 	editToggleBlockComment = GenAction("Toggle Block Comment",   "Ctrl+Q",          "");
