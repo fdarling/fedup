@@ -243,7 +243,6 @@ public:
 		stack->addWidget(replace);
 		stack->addWidget(mark);
 		stack->addWidget(findInFiles);
-		stack->setCurrentIndex(2);
 	}
 public:
 	QStackedLayout * stack;
@@ -253,10 +252,19 @@ public:
 	FindInFilesButtonsArea * findInFiles;
 };
 
-class OptionsArea
+class FindDialog::OptionsArea
 {
 public:
-	OptionsArea(QWidget *parent) : hbox2(NULL)
+	OptionsArea(QWidget *parent) :
+		hbox2(NULL),
+		wholeWord(NULL),
+		caseSensitive(NULL),
+		wrapAround(NULL),
+		normalMode(NULL),
+		extendedMode(NULL),
+		regularExpressionMode(NULL),
+		upDirection(NULL),
+		downDirection(NULL)
 	{
 		hbox2 = new QHBoxLayout;
 		{
@@ -330,10 +338,8 @@ public:
 static QString ConvertFromExtended(const QString &query);
 
 FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt::Tool),
-	comboboxArea(NULL), _tabbar(NULL), combobox(NULL),
-	wholeWord(NULL), caseSensitive(NULL), wrapAround(NULL),
-	extendedMode(NULL), regularExpressionMode(NULL),
-	downDirection(NULL), _editor(editor), _hiddenEditor(NULL)
+	comboboxArea(NULL), optionsArea(NULL), _tabbar(NULL),
+	_editor(editor), _hiddenEditor(NULL)
 {
 	_tabbar = new QTabBar(this);
 	{
@@ -349,7 +355,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	// TODO make this look right using similar methods to QTabWidget w/ QStyleOptionTabWidgetFrameV2 and whatnot
 
 	comboboxArea = new ComboBoxArea(frame);
-	OptionsArea optionsArea(frame);
+	optionsArea = new OptionsArea(frame);
 	buttonsArea = new ButtonsArea(frame);
 	_hiddenEditor = new FScintilla;
 
@@ -364,18 +370,10 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 			hbox->addLayout(comboboxArea->grid, 1);
 			hbox->addLayout(buttonsArea->stack);
 		vbox->addLayout(hbox);
-		vbox->addLayout(optionsArea.hbox2);
+		vbox->addLayout(optionsArea->hbox2);
 	}
 	vboxOuter->addWidget(_tabbar);
 	vboxOuter->addWidget(frame);
-
-	combobox = comboboxArea->findCombobox;
-	wholeWord = optionsArea.wholeWord;
-	caseSensitive = optionsArea.caseSensitive;
-	wrapAround = optionsArea.wrapAround;
-	extendedMode = optionsArea.extendedMode;
-	regularExpressionMode = optionsArea.regularExpressionMode;
-	downDirection = optionsArea.downDirection;
 
 	connect(_tabbar, SIGNAL(currentChanged(int)), buttonsArea->stack, SLOT(setCurrentIndex(int)));
 	connect(_tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
@@ -388,7 +386,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(buttonsArea->replace->findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
 	connect(buttonsArea->replace->replaceButton, SIGNAL(clicked()), this, SLOT(_slot_Replace()));
 	connect(buttonsArea->replace->replaceAllButton, SIGNAL(clicked()), this, SLOT(_slot_ReplaceAll()));
-	connect(combobox->lineEdit(), SIGNAL(returnPressed()), buttonsArea->find->findNextButton, SIGNAL(clicked()));
+	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(returnPressed()), buttonsArea->find->findNextButton, SIGNAL(clicked()));
 	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
 	connect(comboboxArea->replaceCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
 	connect(comboboxArea->browseButton, SIGNAL(clicked()), this, SLOT(_slot_Browse()));
@@ -437,17 +435,39 @@ void FindDialog::showFindInFiles()
 	activateWindow();
 }
 
+void FindDialog::findNext()
+{
+	const bool alreadyChecked = optionsArea->downDirection->isChecked();
+	// (alreadyChecked ? _slot_FindNext : _slot_FindPrev)();
+	if (!alreadyChecked)
+		optionsArea->downDirection->setChecked(true); // HACK
+	_slot_FindNext();
+	if (!alreadyChecked)
+		optionsArea->upDirection->setChecked(true); // HACK
+}
+
+void FindDialog::findPrev()
+{
+	const bool alreadyChecked = optionsArea->upDirection->isChecked();
+	// (alreadyChecked ? _slot_FindNext : _slot_FindPrev)();
+	if (!alreadyChecked)
+		optionsArea->upDirection->setChecked(true); // HACK
+	_slot_FindNext();
+	if (!alreadyChecked)
+		optionsArea->downDirection->setChecked(true); // HACK
+}
+
 bool FindDialog::_FindFirst(bool skipSelection)
 {
-	if (combobox->currentText().size() == 0)
+	if (comboboxArea->findCombobox->currentText().size() == 0)
 		return false;
 
 	int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
 	_editor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 	// TODO use a boolean xor rather than bitwise?
-	int line  = (downDirection->isChecked() ^ !skipSelection) ? lineTo  : lineFrom;
-	int index = (downDirection->isChecked() ^ !skipSelection) ? indexTo : indexFrom;
-	return _editor->findFirst(extendedMode->isChecked() ? ConvertFromExtended(combobox->currentText()) : combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), wrapAround->isChecked(), downDirection->isChecked(), line, index);
+	int line  = (optionsArea->downDirection->isChecked() ^ !skipSelection) ? lineTo  : lineFrom;
+	int index = (optionsArea->downDirection->isChecked() ^ !skipSelection) ? indexTo : indexFrom;
+	return _editor->findFirst(optionsArea->extendedMode->isChecked() ? ConvertFromExtended(comboboxArea->findCombobox->currentText()) : comboboxArea->findCombobox->currentText(), optionsArea->regularExpressionMode->isChecked(), optionsArea->caseSensitive->isChecked(), optionsArea->wholeWord->isChecked(), optionsArea->wrapAround->isChecked(), optionsArea->downDirection->isChecked(), line, index);
 }
 
 bool FindDialog::_Replace()
@@ -500,7 +520,7 @@ void FindDialog::_FindInFiles(bool replacing)
 
 		if (file.open(QIODevice::ReadOnly) && _hiddenEditor->read(&file))
 		{
-			for (bool foundSomething = _hiddenEditor->findFirst(extendedMode->isChecked() ? ConvertFromExtended(combobox->currentText()) : combobox->currentText(), regularExpressionMode->isChecked(), caseSensitive->isChecked(), wholeWord->isChecked(), false, true, -1, -1, false); foundSomething; foundSomething = _hiddenEditor->findNext())
+			for (bool foundSomething = _hiddenEditor->findFirst(optionsArea->extendedMode->isChecked() ? ConvertFromExtended(comboboxArea->findCombobox->currentText()) : comboboxArea->findCombobox->currentText(), optionsArea->regularExpressionMode->isChecked(), optionsArea->caseSensitive->isChecked(), optionsArea->wholeWord->isChecked(), false, true, -1, -1, false); foundSomething; foundSomething = _hiddenEditor->findNext())
 			{
 				int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
 				_hiddenEditor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -527,8 +547,8 @@ void FindDialog::_slot_Replace()
 
 void FindDialog::_slot_ReplaceAll()
 {
-	bool wrapAroundWasChecked = wrapAround->isChecked();
-	wrapAround->setChecked(false); // HACK, should be totally safe though
+	bool wrapAroundWasChecked = optionsArea->wrapAround->isChecked();
+	optionsArea->wrapAround->setChecked(false); // HACK, should be totally safe though
 
 	_editor->beginUndoAction();
 	while (_Replace())
@@ -537,7 +557,7 @@ void FindDialog::_slot_ReplaceAll()
 	}
 	_editor->endUndoAction();
 
-	wrapAround->setChecked(wrapAroundWasChecked);
+	optionsArea->wrapAround->setChecked(wrapAroundWasChecked);
 }
 
 void FindDialog::_slot_FindInFiles()
@@ -611,10 +631,10 @@ void FindDialog::showEvent(QShowEvent *event)
 		// TODO set the directoryCombobox text based on the current document, if that behavior is enabled
 		const QString selectedText = _editor->selectedText();
 		if (selectedText.size() != 0)
-			combobox->lineEdit()->setText(selectedText);
+			comboboxArea->findCombobox->lineEdit()->setText(selectedText);
 		if (!_geometry.isNull())
 			setGeometry(_geometry);
-		combobox->setFocus();
+		comboboxArea->findCombobox->setFocus();
 	}
 }
 

@@ -39,6 +39,8 @@ Actions::Actions(QObject *parent) : QObject(parent)
 
 	searchFind = GenAction("&Find...", "Ctrl+F", "find.bmp");
 	searchFindInFiles = GenAction("Find in Files...", "Ctrl+Shift+F", "");
+	searchFindNext = GenAction("Find &Next...", "F3", "");
+	searchFindPrev = GenAction("Find &Previous...", "Shift+F3", "");
 	searchReplace = GenAction("&Replace...", "Ctrl+R", "findReplace.bmp");
 	searchGoTo = GenAction("&Go to...", "Ctrl+G", "");
 }

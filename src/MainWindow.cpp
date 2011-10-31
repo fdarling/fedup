@@ -101,6 +101,8 @@ void MainWindow::_SetupActions()
 
 	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
 	connect(_actions->searchFindInFiles, SIGNAL(triggered()), _findDialog, SLOT(showFindInFiles()));
+	connect(_actions->searchFindNext, SIGNAL(triggered()), _findDialog, SLOT(findNext()));
+	connect(_actions->searchFindPrev, SIGNAL(triggered()), _findDialog, SLOT(findPrev()));
 	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
 }

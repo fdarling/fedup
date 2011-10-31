@@ -28,6 +28,8 @@ public slots:
 	void showReplace();
 	void showMark();
 	void showFindInFiles();
+	void findNext();
+	void findPrev();
 protected slots:
 	void _slot_FindNext();
 	void _slot_Replace();
@@ -48,17 +50,12 @@ protected:
 
 	class ComboBoxArea;
 	class ButtonsArea;
+	class OptionsArea;
 
 	ComboBoxArea *comboboxArea;
 	ButtonsArea *buttonsArea;
+	OptionsArea *optionsArea;
 	QTabBar * _tabbar;
-	QComboBox *combobox;
-	QCheckBox *wholeWord;
-	QCheckBox *caseSensitive;
-	QCheckBox *wrapAround;
-	QRadioButton *extendedMode;
-	QRadioButton *regularExpressionMode;
-	QRadioButton *downDirection;
 	FScintilla *_editor;
 	FScintilla *_hiddenEditor;
 	QRect _geometry;

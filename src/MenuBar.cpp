@@ -46,14 +46,13 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		editMenu->addAction(actions->editToggleBlockComment);
 		editMenu->addSeparator();
 		editMenu->addAction(actions->editTrimTrailingSpaces);
-
-
 	}
 	{
 		QMenu * const searchMenu = this->addMenu("&Search");
 		searchMenu->addAction(actions->searchFind);
 		searchMenu->addAction(actions->searchFindInFiles);
-// searchMenu->addAction("Find Next", tabs, SLOT(slot_FindNext()), QKeySequence("F3"));
+		searchMenu->addAction(actions->searchFindNext);
+		searchMenu->addAction(actions->searchFindPrev);
 // searchMenu->addAction("Find Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Shift+F3"));
 		// searchMenu->addAction("Select and Find Next", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+F3"));
 		// searchMenu->addAction("Select and Find Previous", tabs, SLOT(slot_FindPrev()), QKeySequence("Ctrl+Shift+F3"));

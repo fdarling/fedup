@@ -42,6 +42,8 @@ public:
 
 	QAction *searchFind;
 	QAction *searchFindInFiles;
+	QAction *searchFindNext;
+	QAction *searchFindPrev;
 	QAction *searchReplace;
 	QAction *searchGoTo;
 protected:
