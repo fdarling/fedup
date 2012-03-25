@@ -388,6 +388,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(buttonsArea->replace->replaceAllButton, SIGNAL(clicked()), this, SLOT(_slot_ReplaceAll()));
 	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(returnPressed()), buttonsArea->find->findNextButton, SIGNAL(clicked()));
 	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
+	connect(comboboxArea->directoryCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_DirectoryTextChanged()));
 	connect(comboboxArea->replaceCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
 	connect(comboboxArea->browseButton, SIGNAL(clicked()), this, SLOT(_slot_Browse()));
 	connect(qApp, SIGNAL(focusChanged(QWidget *, QWidget *)), this, SLOT(_slot_FocusChanged(QWidget *, QWidget *)));
@@ -395,6 +396,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	// to initialize it to the right state we call these slots as if the signals were triggered
 	_slot_CurrentChanged(_tabbar->currentIndex());
 	_slot_FindReplaceTextChanged();
+	_slot_DirectoryTextChanged();
 }
 
 FindDialog::~FindDialog()
@@ -603,11 +605,25 @@ void FindDialog::_slot_CurrentChanged(int index)
 	comboboxArea->directoryLabel->setEnabled(findInFilesSelected);
 	comboboxArea->directoryCombobox->setEnabled(findInFilesSelected);
 	comboboxArea->browseButton->setEnabled(findInFilesSelected);
+
+	setWindowTitle(_tabbar->tabText(index));
+}
+
+bool FindDialog::_IsFindEnabled() const
+{
+	return (comboboxArea->findCombobox->currentText().size() != 0 && comboboxArea->directoryCombobox->currentText().size() != 0);
+}
+
+bool FindDialog::_IsReplaceEnabled() const
+{
+	return (comboboxArea->replaceCombobox->currentText().size() != 0) && _IsFindEnabled();
 }
 
 void FindDialog::_slot_FindReplaceTextChanged()
 {
-	const bool findEnabled = (comboboxArea->findCombobox->currentText().size() != 0);
+	const bool findEnabled = _IsFindEnabled();
+	const bool replaceEnabled = _IsReplaceEnabled();
+
 	buttonsArea->find->findNextButton->setEnabled(findEnabled);
 	buttonsArea->find->countButton->setEnabled(findEnabled);
 	buttonsArea->find->findAllButton->setEnabled(findEnabled);
@@ -616,11 +632,15 @@ void FindDialog::_slot_FindReplaceTextChanged()
 	buttonsArea->mark->markAllButton->setEnabled(findEnabled);
 	buttonsArea->findInFiles->findAllButton->setEnabled(findEnabled);
 
-	const bool replaceEnabled = (comboboxArea->replaceCombobox->currentText().size() != 0) && findEnabled;
 	buttonsArea->replace->replaceButton->setEnabled(replaceEnabled);
 	buttonsArea->replace->replaceAllButton->setEnabled(replaceEnabled);
 	buttonsArea->replace->replaceAllInOpenDocumentsButton->setEnabled(replaceEnabled);
 	buttonsArea->findInFiles->replaceAllButton->setEnabled(replaceEnabled);
+}
+
+void FindDialog::_slot_DirectoryTextChanged()
+{
+	_slot_FindReplaceTextChanged();
 }
 
 void FindDialog::showEvent(QShowEvent *event)

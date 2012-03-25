@@ -25,15 +25,17 @@ public:
 public slots:
 	void open();
 	void open(const QString &filePath);
-	void save();
-	void saveAs();
-	void saveAs(const QString &filePath);
+	bool save();
+	bool saveAs();
+	bool saveAs(const QString &filePath);
 protected slots:
 	void _slot_SearchGoTo();
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 protected:
 	void _SetupActions();
 	void _SetupConnections();
+
+	void closeEvent(QCloseEvent *event);
 
 	QSettings _settings;
 	QString _currentDirectory;

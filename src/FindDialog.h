@@ -40,6 +40,7 @@ protected slots:
 	void _slot_FocusChanged(QWidget *old, QWidget *now);
 	void _slot_CurrentChanged(int index);
 	void _slot_FindReplaceTextChanged();
+	void _slot_DirectoryTextChanged();
 protected:
 	void showEvent(QShowEvent *event);
 	void hideEvent(QHideEvent *event);
@@ -47,6 +48,8 @@ protected:
 	bool _FindFirst(bool skipSelection = true);
 	bool _Replace();
 	void _FindInFiles(bool replacing = false);
+	bool _IsFindEnabled() const;
+	bool _IsReplaceEnabled() const;
 
 	class ComboBoxArea;
 	class ButtonsArea;

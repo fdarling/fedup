@@ -9,11 +9,13 @@
 #include "TabContext.h"
 #include "FindDialog.h"
 #include "GoToDialog.h"
+#include "ExitSaveDialog.h"
 #include "RecentFilesList.h"
 #include "FileFilters.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCloseEvent>
 // #include <QDebug>
 namespace fedup {
 
@@ -178,28 +180,28 @@ void MainWindow::open(const QString &filePath)
 	}
 }
 
-void MainWindow::save()
+bool MainWindow::save()
 {
 	EditPaneTabs * const tabs = _editpane->tabs();
 	if (tabs->count() == 0)
-		return;
+		return false;
 	TabContext * const context = tabs->tabContext(tabs->currentIndex());
 	if (context->filePath.size() == 0)
-		saveAs();
+		return saveAs();
 	else
-		saveAs(context->filePath);
+		return saveAs(context->filePath);
 }
 
-void MainWindow::saveAs()
+bool MainWindow::saveAs()
 {
 	const QString filename = QFileDialog::getSaveFileName(this, "Save As...", _currentDirectory, FILE_FILTERS);
 	if (filename.size() == 0)
-		return;
+		return false;
 
-	saveAs(filename);
+	return saveAs(filename);
 }
 
-void MainWindow::saveAs(const QString &filePath)
+bool MainWindow::saveAs(const QString &filePath)
 {
 	QFileInfo info(filePath);
 	const QString absoluteFilePath = info.absoluteFilePath();
@@ -212,7 +214,7 @@ void MainWindow::saveAs(const QString &filePath)
 
 		case SaveSucceeded:
 		_currentDirectory = info.absolutePath();
-		break;
+		return true;
 
 		case SaveAccessDenied:
 		QMessageBox::warning(this, "Access denied", "Error opening \"" + absoluteFilePath + "\" for writing");
@@ -226,6 +228,8 @@ void MainWindow::saveAs(const QString &filePath)
 		QMessageBox::warning(this, "Write error", "Error writing \"" + absoluteFilePath + "\"");
 		break;
 	}
+
+	return false;
 }
 
 void MainWindow::_slot_SearchGoTo()
@@ -251,6 +255,23 @@ void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 	}
 	else
 		setWindowTitle("fedup");
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	/*if (maybeSave())
+	{
+		writeSettings();*/
+		ExitSaveDialog exitSaveDialog(this);
+		if (exitSaveDialog.shouldClose(this, _editpane))
+			event->accept();
+		else
+			event->ignore();
+	/*}
+	else
+	{
+		event->ignore();
+	}*/
 }
 
 } // namespace fedup

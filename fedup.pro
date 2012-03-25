@@ -17,6 +17,7 @@ HEADERS = \
 	src/RecentFilesList.h \
 	src/GoToDialog.h \
 	src/FindDialog.h \
+	src/ExitSaveDialog.h \
 	src/TabContext.h \
 	src/FScintilla.h \
 	src/EditPaneTabs.h \
@@ -35,6 +36,7 @@ SOURCES = \
 	src/RecentFilesList.cpp \
 	src/GoToDialog.cpp \
 	src/FindDialog.cpp \
+	src/ExitSaveDialog.cpp \
 	src/TabContext.cpp \
 	src/FScintilla.cpp \
 	src/EditPaneTabs.cpp \
