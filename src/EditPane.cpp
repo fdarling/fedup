@@ -3,12 +3,14 @@
 #include "FScintilla.h"
 #include "TabContext.h"
 #include "LexerPicker.h"
+#include "FileFilters.h"
 
 #include <QVBoxLayout>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QSettings>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -28,8 +30,8 @@ EditPane::EditPane(QWidget *parent) : QWidget(parent), _tabs(NULL)
 	QVBoxLayout * const vbox = new QVBoxLayout(this);
 	vbox->setSpacing(0);
 	vbox->setContentsMargins(0, 0, 0, 0);
-	vbox->addWidget(_tabs = new EditPaneTabs(this));
-	vbox->addWidget(_editor = new FScintilla(this));
+	vbox->addWidget(_tabs = new EditPaneTabs);
+	vbox->addWidget(_editor = new FScintilla);
 
 	connect(_tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(_slot_TabCloseRequested(int)));
 	connect(_tabs, SIGNAL(tabRemoved(TabContext*)), this, SLOT(_slot_TabRemoved(TabContext*)));
@@ -153,6 +155,9 @@ SaveResult EditPane::saveAs(const QString &filePath)
 		_tabs->setTabText(_tabs->currentIndex(), info.fileName());
 	}
 	_editor->setModified(false);
+	const QString filename = info.fileName();
+	if (absoluteFilePath.size() != 0)
+		_editor->setLexer(LexerPicker::chooseLexer(filename));
 	return SaveSucceeded;
 }
 
@@ -169,6 +174,55 @@ void EditPane::closeAll()
 
 void EditPane::_slot_TabCloseRequested(int index)
 {
+	// TODO consolidate the this code with MainWindow's, and also make it use _workingDirectory
+	TabContext * const context = _tabs->tabContext(index);
+	QScopedPointer<FScintilla> edit(new FScintilla);
+	edit->setDocument(context->document);
+	if (edit->isModified())
+	{
+		const QMessageBox::StandardButton result = QMessageBox::question(this, "Save?", "Save file \"" + ((context->filePath.size() > 0) ? context->filePath : _tabs->tabText(index)) + "\"", QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
+		if (result == QMessageBox::Cancel)
+			return;
+		if (result == QMessageBox::Save)
+		{
+			QString filePath = context->filePath;
+			if (filePath.size() == 0)
+			{
+				filePath = QFileDialog::getSaveFileName(this, "Save As...", QString(), FILE_FILTERS); // TODO we don't have access to _currentDirectory in this class
+				if (filePath.size() == 0)
+					return;
+				QFileInfo info(filePath);
+				filePath = info.absoluteFilePath();
+			}
+
+			const int oldIndex = _tabs->currentIndex();
+			_tabs->setCurrentIndex(index);
+			const SaveResult saveResult = saveAs(filePath);
+			_tabs->setCurrentIndex(oldIndex);
+			switch (saveResult)
+			{
+				case SaveNothingToSave:
+				// NOTE: this shouldn't happen normally unless saveAs is programatically called rather than from an action
+				break;
+
+				case SaveSucceeded:
+				// _currentDirectory = info.absolutePath();
+				break;
+
+				case SaveAccessDenied:
+				QMessageBox::warning(this, "Access denied", "Error opening \"" + filePath + "\" for writing");
+				return;
+
+				case SaveDirectoryDoesntExist:
+				QMessageBox::warning(this, "Directory doesn't exist", "Error opening \"" + filePath + "\" for writing");
+				return;
+
+				case SaveWriteError:
+				QMessageBox::warning(this, "Write error", "Error writing \"" + filePath + "\"");
+				return;
+			}
+		}
+	}
 	_tabs->removeTab(index);
 }
 

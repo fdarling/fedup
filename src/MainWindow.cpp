@@ -24,10 +24,10 @@ extern const QString FILE_TYPES_STRING; // defined at the bottom of this file
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _settings(QSettings::UserScope, "forestdarling.com", "fedup3"), _actions(NULL), _menubar(NULL), _toolbar(NULL), _statusbar(NULL), _editpane(NULL), _findDialog(NULL), _gotoDialog(NULL)
 {
 	_actions = new Actions(this);
-	setMenuBar(_menubar = new MenuBar(_actions, _settings, this));
-	addToolBar(_toolbar = new ToolBar(_actions, this));
-	setStatusBar(_statusbar = new StatusBar(this));
-	setCentralWidget(_editpane = new EditPane(this));
+	setMenuBar(_menubar = new MenuBar(_actions, _settings));
+	addToolBar(_toolbar = new ToolBar(_actions));
+	setStatusBar(_statusbar = new StatusBar);
+	setCentralWidget(_editpane = new EditPane);
 
 	_findDialog = new FindDialog(_editpane->editor(), this);
 	_gotoDialog = new GoToDialog(this);
