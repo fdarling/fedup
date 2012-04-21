@@ -5,7 +5,7 @@
 namespace fedup {
 
 const QString FILE_FILTERS(
-	"All types (*.*);;"
+	"All types (*);;"
 	"Normal text file (*.txt);;"
 	"Flash Action script file (*.as .mx);;"
 	"Ada file (*.ada *.ads *.adb);;"

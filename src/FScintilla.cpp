@@ -52,6 +52,7 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 	setFolding(BoxedTreeFoldStyle, 2);
 	setAutoIndent(true);
 	setIndentationGuides(true);
+	setBraceMatching(SloppyBraceMatch);
 
 	// setAutoCompletionThreshold(6);
 	// setAutoCompletionSource(AcsAll);
@@ -120,6 +121,10 @@ void FScintilla::setDocument(const QsciDocument &doc)
 	setFont(f);
 	setMarginsFont(f);
 	setTabWidth(4);
+
+	setMatchedBraceBackgroundColor(Qt::white);
+	setMatchedBraceForegroundColor(Qt::red);
+	// SendScintilla((unsigned int)SCI_STYLESETBOLD, (long unsigned int)STYLE_BRACELIGHT, (long int)true);
 
 	const bool nowModified = isModified();
 	if (wasModified != nowModified)

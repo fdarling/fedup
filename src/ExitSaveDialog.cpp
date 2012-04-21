@@ -15,20 +15,20 @@ namespace fedup {
 
 ExitSaveDialog::ExitSaveDialog(QWidget *parent) : QDialog(parent), _table(NULL), _mainWindow(NULL), _editPane(NULL)
 {
-	_table = new QTableWidget(this);
+	_table = new QTableWidget;
 	{
 		_table->setWordWrap(false);
 		_table->setSortingEnabled(true);
 		_table->setCornerButtonEnabled(false);
 		_table->verticalHeader()->hide();
-		_table->horizontalHeader()->setHighlightSections(false);
-		// _table->horizontalHeader()->setStretchLastSection(true);
-		// _table->setSelectionBehavior(QAbstractItemView::SelectRows);
+		// _table->horizontalHeader()->setHighlightSections(false);
+		_table->horizontalHeader()->setStretchLastSection(true);
 		// _table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-		_table->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+		// _table->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 		_table->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 		_table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-		_table->setSelectionMode(QAbstractItemView::ContiguousSelection);
+		_table->setSelectionBehavior(QAbstractItemView::SelectRows);
+		_table->setSelectionMode(QAbstractItemView::SingleSelection);
 		_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	}
 	{
@@ -73,6 +73,7 @@ ExitSaveDialog::ExitSaveDialog(QWidget *parent) : QDialog(parent), _table(NULL),
 
 		hbox->addLayout(vbox);
 	}
+	setMinimumWidth(600);
 }
 
 ExitSaveDialog::~ExitSaveDialog()
