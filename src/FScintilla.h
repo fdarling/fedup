@@ -37,6 +37,8 @@ protected slots:
 	void _slot_CursorPositionChanged(int line, int index);
 	void _slot_SelectionChanged();
 protected:
+	void wheelEvent(QWheelEvent *event);
+
 	int _LineLength(int line);
 	void _RefreshCurrentLineMarker();
 	void _RefreshCurrentLineMarker(int newLine);

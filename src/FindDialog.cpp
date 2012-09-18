@@ -343,7 +343,6 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 {
 	_tabbar = new QTabBar(this);
 	{
-		// tabbar->setDrawBase(false);
 		_tabbar->setExpanding(false);
 		_tabbar->addTab("Find");
 		_tabbar->addTab("Replace");
@@ -352,6 +351,12 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	}
 	QFrame * const frame = new QFrame(this);
 	frame->setFrameStyle(QFrame::Panel | QFrame::Raised);
+	// frame->setStyleSheet("border-top-style: none;")
+	{
+		QMargins margins = frame->contentsMargins();
+		margins.setTop(0);
+		frame->setContentsMargins(margins);
+	}
 	// TODO make this look right using similar methods to QTabWidget w/ QStyleOptionTabWidgetFrameV2 and whatnot
 
 	comboboxArea = new ComboBoxArea(frame);
@@ -611,12 +616,22 @@ void FindDialog::_slot_CurrentChanged(int index)
 
 bool FindDialog::_IsFindEnabled() const
 {
-	return (comboboxArea->findCombobox->currentText().size() != 0 && comboboxArea->directoryCombobox->currentText().size() != 0);
+	return (comboboxArea->findCombobox->currentText().size() != 0);
+}
+
+bool FindDialog::_IsFindInFilesEnabled() const
+{
+	return _IsFindEnabled() && (comboboxArea->directoryCombobox->currentText().size() != 0);
 }
 
 bool FindDialog::_IsReplaceEnabled() const
 {
 	return (comboboxArea->replaceCombobox->currentText().size() != 0) && _IsFindEnabled();
+}
+
+bool FindDialog::_IsReplaceInFilesEnabled() const
+{
+	return _IsReplaceEnabled() && (comboboxArea->directoryCombobox->currentText().size() != 0);
 }
 
 void FindDialog::_slot_FindReplaceTextChanged()
@@ -630,12 +645,12 @@ void FindDialog::_slot_FindReplaceTextChanged()
 	buttonsArea->find->findAllInOpenDocumentsButton->setEnabled(findEnabled);
 	buttonsArea->replace->findNextButton->setEnabled(findEnabled);
 	buttonsArea->mark->markAllButton->setEnabled(findEnabled);
-	buttonsArea->findInFiles->findAllButton->setEnabled(findEnabled);
+	buttonsArea->findInFiles->findAllButton->setEnabled(_IsFindInFilesEnabled());
 
 	buttonsArea->replace->replaceButton->setEnabled(replaceEnabled);
 	buttonsArea->replace->replaceAllButton->setEnabled(replaceEnabled);
 	buttonsArea->replace->replaceAllInOpenDocumentsButton->setEnabled(replaceEnabled);
-	buttonsArea->findInFiles->replaceAllButton->setEnabled(replaceEnabled);
+	buttonsArea->findInFiles->replaceAllButton->setEnabled(_IsReplaceInFilesEnabled());
 }
 
 void FindDialog::_slot_DirectoryTextChanged()
@@ -662,6 +677,7 @@ void FindDialog::hideEvent(QHideEvent *event)
 {
 	if (!event->spontaneous())
 		_geometry = geometry();
+	QDialog::hideEvent(event);
 }
 
 static QString ConvertFromExtended(const QString &query)

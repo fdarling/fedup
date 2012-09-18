@@ -31,12 +31,16 @@ protected slots:
 	void slot_Go();
 	void slot_LineMode(bool lineMode);
 protected:
+	void showEvent(QShowEvent *event);
+	void hideEvent(QHideEvent *event);
+
 	QLineEdit *lineedit;
 	QIntValidator *lineValidator;
 	QIntValidator *offsetValidator;
 	QRadioButton *lineMode;
 	QLabel *currentLabel;
 	QLabel *maxLabel;
+	QRect _geometry;
 	int currentLine;
 	int currentOffset;
 };

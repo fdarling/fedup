@@ -1,6 +1,7 @@
 #include "FScintilla.h"
 
 #include <QScrollBar>
+#include <QWheelEvent>
 
 // HACK, not included in the Qt port?
 #ifndef SCE_UNIVERSAL_FOUND_STYLE_SMART
@@ -382,6 +383,19 @@ void FScintilla::trimTrailingWhitespace()
 	SendScintilla(SCI_GOTOPOS, SendScintilla(SCI_FINDCOLUMN, currentLine, currentColumn));
 	verticalScrollBar()->setValue(scrollPos);
 	endUndoAction();
+}
+
+void FScintilla::wheelEvent(QWheelEvent *event)
+{
+	if (event->modifiers() == Qt::ControlModifier && event->orientation() == Qt::Vertical)
+	{
+		// TODO see if this works for high resolution mice, I have a feeling I will need to accumulate small scrolls
+		const int numDegrees = event->delta() / 8;
+		const int numSteps = numDegrees / 15;
+		zoomIn(numSteps);
+	}
+	else
+		QsciScintilla::wheelEvent(event);
 }
 
 int FScintilla::_LineLength(int line)

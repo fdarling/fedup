@@ -49,6 +49,8 @@ protected:
 	bool _Replace();
 	void _FindInFiles(bool replacing = false);
 	bool _IsFindEnabled() const;
+	bool _IsFindInFilesEnabled() const;
+	bool _IsReplaceInFilesEnabled() const;
 	bool _IsReplaceEnabled() const;
 
 	class ComboBoxArea;

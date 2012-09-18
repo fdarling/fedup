@@ -12,3 +12,4 @@
 - Make sure files without extensions show in the file saving/opening dialogs with the *.* filter set, I may have to change the filter to be just * or blank
 - Add macro support
 - Fix the tab bar's visibility when the program launches restoring previously opened tabs (an issue on Linux at least)
+- Get to the bottom of why CTRL+U is being intercepted or overridden somewhere

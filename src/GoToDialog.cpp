@@ -7,6 +7,8 @@
 #include <QGridLayout>
 #include <QRadioButton>
 #include <QPushButton>
+#include <QShowEvent>
+#include <QHideEvent>
 
 namespace fedup {
 
@@ -101,6 +103,20 @@ void GoToDialog::slot_LineMode(bool lineMode)
 	lineedit->setValidator(validator);
 	currentLabel->setText(QString::number(lineMode ? currentLine : currentOffset));
 	maxLabel->setText(QString::number(validator->top()));
+}
+
+void GoToDialog::showEvent(QShowEvent *event)
+{
+	QDialog::showEvent(event);
+	if (!event->spontaneous() && !_geometry.isNull())
+		setGeometry(_geometry);
+}
+
+void GoToDialog::hideEvent(QHideEvent *event)
+{
+	if (!event->spontaneous())
+		_geometry = geometry();
+	QDialog::hideEvent(event);
 }
 
 } // namespace fedup

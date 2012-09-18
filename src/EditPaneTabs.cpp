@@ -40,6 +40,7 @@ int EditPaneTabs::addTab(const QString &tabname, TabContext *context)
 		emit currentChanged(newIndex);
 	if (shouldEmit)
 		emit containsTabsChanged(true);
+	updateGeometry(); // HACK to workaround a Qt bug where the geometry is incorrectly cached and the QTabBar is invisible
 	return newIndex;
 }
 
@@ -64,6 +65,7 @@ void EditPaneTabs::removeTab(int index)
 		emit containsTabsChanged(false);
 		emit tabChanged(NULL, NULL);
 	}
+	updateGeometry(); // HACK to workaround a Qt bug where the geometry is incorrectly cached and the QTabBar is invisible
 	//qDebug() << "Removed tab with context =" << context;
 	//qDebug() << "Done removing tab" << index;
 }
