@@ -2,9 +2,10 @@
 #define FEDUP_ACTIONS_H
 
 #include <QObject>
+#include <QAction>
 
 QT_BEGIN_NAMESPACE
-class QAction;
+// class QAction;
 class QString;
 QT_END_NAMESPACE
 
@@ -46,6 +47,8 @@ public:
 	QAction *searchFindPrev;
 	QAction *searchReplace;
 	QAction *searchGoTo;
+
+	QAction *viewSearchResults;
 protected:
 	QAction * GenAction(const QString &name, const QString &seq, const QString &iconFilename);
 };

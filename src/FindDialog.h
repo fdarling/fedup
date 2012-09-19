@@ -1,5 +1,5 @@
-#ifndef FINDDIALOG_H
-#define FINDDIALOG_H
+#ifndef FEDUP_FINDDIALOG_H
+#define FEDUP_FINDDIALOG_H
 
 #include <QDialog>
 #include <QRect>

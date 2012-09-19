@@ -43,6 +43,9 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	searchFindPrev = GenAction("Find &Previous...", "Shift+F3", "");
 	searchReplace = GenAction("&Replace...", "Ctrl+R", "findReplace.bmp");
 	searchGoTo = GenAction("&Go to...", "Ctrl+G", "");
+
+	viewSearchResults = GenAction("Search Results", "F7", "");
+	viewSearchResults->setCheckable(true);
 }
 
 Actions::~Actions()

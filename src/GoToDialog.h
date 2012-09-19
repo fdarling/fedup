@@ -1,5 +1,5 @@
-#ifndef GOTODIALOG_H
-#define GOTODIALOG_H
+#ifndef FEDUP_GOTODIALOG_H
+#define FEDUP_GOTODIALOG_H
 
 #include <QDialog>
 

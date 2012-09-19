@@ -2,6 +2,7 @@
 #include "Actions.h"
 #include "MenuBar.h"
 #include "ToolBar.h"
+#include "SearchResultsDock.h"
 #include "StatusBar.h"
 #include "EditPane.h"
 #include "EditPaneTabs.h"
@@ -21,16 +22,24 @@ namespace fedup {
 
 extern const QString FILE_TYPES_STRING; // defined at the bottom of this file
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _settings(QSettings::UserScope, "forestdarling.com", "fedup3"), _actions(NULL), _menubar(NULL), _toolbar(NULL), _statusbar(NULL), _editpane(NULL), _findDialog(NULL), _gotoDialog(NULL)
+MainWindow::MainWindow(QWidget *parent) :
+	QMainWindow(parent),
+	_settings(QSettings::UserScope, "forestdarling.com", "fedup3"),
+	_actions(new Actions(this)),
+	_menubar(new MenuBar(_actions, _settings)),
+	_toolbar(new ToolBar(_actions)),
+	_statusbar(new StatusBar),
+	_editpane(new EditPane),
+	_findDialog(new FindDialog(_editpane->editor(), this)),
+	_gotoDialog(new GoToDialog(this)),
+	_searchResultsDock(new SearchResultsDock)
 {
-	_actions = new Actions(this);
-	setMenuBar(_menubar = new MenuBar(_actions, _settings));
-	addToolBar(_toolbar = new ToolBar(_actions));
-	setStatusBar(_statusbar = new StatusBar);
-	setCentralWidget(_editpane = new EditPane);
-
-	_findDialog = new FindDialog(_editpane->editor(), this);
-	_gotoDialog = new GoToDialog(this);
+	setMenuBar(_menubar);
+	addToolBar(_toolbar);
+	setStatusBar(_statusbar);
+	setCentralWidget(_editpane);
+	_searchResultsDock->hide();
+	addDockWidget(Qt::BottomDockWidgetArea, _searchResultsDock);
 
 	_SetupActions();
 	_SetupConnections();
@@ -107,6 +116,10 @@ void MainWindow::_SetupActions()
 	connect(_actions->searchFindPrev, SIGNAL(triggered()), _findDialog, SLOT(findPrev()));
 	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
+
+	_actions->viewSearchResults->setChecked(_searchResultsDock->isVisible());
+	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
+	connect(_searchResultsDock, SIGNAL(visibilityChanged(bool)), _actions->viewSearchResults, SLOT(setChecked(bool)));
 }
 
 void MainWindow::_SetupConnections()

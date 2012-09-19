@@ -22,6 +22,7 @@ HEADERS = \
 	src/FScintilla.h \
 	src/EditPaneTabs.h \
 	src/EditPane.h \
+	src/SearchResultsDock.h \
 	src/StatusBar.h \
 	src/ToolBar.h \
 	src/MenuBar.h \
@@ -41,6 +42,7 @@ SOURCES = \
 	src/FScintilla.cpp \
 	src/EditPaneTabs.cpp \
 	src/EditPane.cpp \
+	src/SearchResultsDock.cpp \
 	src/StatusBar.cpp \
 	src/ToolBar.cpp \
 	src/MenuBar.cpp \

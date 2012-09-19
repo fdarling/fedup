@@ -1,5 +1,5 @@
-#ifndef LEXERPICKER_H
-#define LEXERPICKER_H
+#ifndef FEDUP_LEXERPICKER_H
+#define FEDUP_LEXERPICKER_H
 
 #include <QtGlobal>
 

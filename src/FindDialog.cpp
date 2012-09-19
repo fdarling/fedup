@@ -296,13 +296,13 @@ public:
 			normalMode->setChecked(true);
 		}
 		{
-			QGroupBox * const groupbox = new QGroupBox("Direction", parent);
-			QVBoxLayout * const vbox2 = new QVBoxLayout(groupbox);
+			directionBox = new QGroupBox("Direction", parent);
+			QVBoxLayout * const vbox2 = new QVBoxLayout(directionBox);
 			vbox2->setSpacing(0);
 			// vbox2->setContentsMargins(0, 0, 0, 0);
 			vbox2->addWidget(upDirection = new QRadioButton("&Up", parent));
 			vbox2->addWidget(downDirection = new QRadioButton("&Down", parent));
-			hbox2->addWidget(groupbox);
+			hbox2->addWidget(directionBox);
 			vbox2->addStretch();
 
 			downDirection->setChecked(true);
@@ -331,6 +331,7 @@ public:
 	QRadioButton * normalMode;
 	QRadioButton * extendedMode;
 	QRadioButton * regularExpressionMode;
+	QGroupBox * directionBox;
 	QRadioButton * upDirection;
 	QRadioButton * downDirection;
 };
@@ -611,6 +612,9 @@ void FindDialog::_slot_CurrentChanged(int index)
 	comboboxArea->directoryCombobox->setEnabled(findInFilesSelected);
 	comboboxArea->browseButton->setEnabled(findInFilesSelected);
 
+	optionsArea->directionBox->setEnabled(!findInFilesSelected);
+	optionsArea->wrapAround->setEnabled(!findInFilesSelected);
+
 	setWindowTitle(_tabbar->tabText(index));
 }
 
@@ -626,7 +630,8 @@ bool FindDialog::_IsFindInFilesEnabled() const
 
 bool FindDialog::_IsReplaceEnabled() const
 {
-	return (comboboxArea->replaceCombobox->currentText().size() != 0) && _IsFindEnabled();
+	// NOTE: replacing with nothing is allowed!
+	return /*(comboboxArea->replaceCombobox->currentText().size() != 0) && */_IsFindEnabled();
 }
 
 bool FindDialog::_IsReplaceInFilesEnabled() const

@@ -14,6 +14,7 @@ class StatusBar;
 class EditPane;
 class FindDialog;
 class GoToDialog;
+class SearchResultsDock;
 class TabContext;
 
 class MainWindow : public QMainWindow
@@ -46,6 +47,7 @@ protected:
 	EditPane *_editpane;
 	FindDialog *_findDialog;
 	GoToDialog *_gotoDialog;
+	SearchResultsDock *_searchResultsDock;
 };
 
 } // namespace fedup
