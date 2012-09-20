@@ -34,6 +34,7 @@ EditPane::EditPane(QWidget *parent) : QWidget(parent), _tabs(NULL)
 	vbox->addWidget(_editor = new FScintilla);
 
 	connect(_tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(_slot_TabCloseRequested(int)));
+	connect(_tabs, SIGNAL(tabCloseAllButRequested(int)), this, SLOT(_slot_TabCloseAllButRequested(int)));
 	connect(_tabs, SIGNAL(tabRemoved(TabContext*)), this, SLOT(_slot_TabRemoved(TabContext*)));
 	connect(_tabs, SIGNAL(tabChanged(TabContext*, TabContext*)), this, SLOT(_slot_TabChanged(TabContext*, TabContext*)));
 	connect(_editor, SIGNAL(modificationChanged(bool)), _tabs, SLOT(slot_ModificationChanged(bool)));
@@ -174,6 +175,22 @@ void EditPane::closeAll()
 
 void EditPane::_slot_TabCloseRequested(int index)
 {
+	_TryClosingTab(index);
+}
+
+void EditPane::_slot_TabCloseAllButRequested(int index)
+{
+	for (int i = _tabs->count()-1; i >= 0; i--)
+	{
+		if (i == index)
+			continue;
+		if (!_TryClosingTab(i))
+			return;
+	}
+}
+
+bool EditPane::_TryClosingTab(int index)
+{
 	// TODO consolidate the this code with MainWindow's, and also make it use _workingDirectory
 	TabContext * const context = _tabs->tabContext(index);
 	QScopedPointer<FScintilla> edit(new FScintilla);
@@ -182,7 +199,7 @@ void EditPane::_slot_TabCloseRequested(int index)
 	{
 		const QMessageBox::StandardButton result = QMessageBox::question(this, "Save?", "Save file \"" + ((context->filePath.size() > 0) ? context->filePath : _tabs->tabText(index)) + "\"", QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
 		if (result == QMessageBox::Cancel)
-			return;
+			return false;
 		if (result == QMessageBox::Save)
 		{
 			QString filePath = context->filePath;
@@ -190,7 +207,7 @@ void EditPane::_slot_TabCloseRequested(int index)
 			{
 				filePath = QFileDialog::getSaveFileName(this, "Save As...", QString(), FILE_FILTERS); // TODO we don't have access to _currentDirectory in this class
 				if (filePath.size() == 0)
-					return;
+					return false;
 				QFileInfo info(filePath);
 				filePath = info.absoluteFilePath();
 			}
@@ -211,19 +228,20 @@ void EditPane::_slot_TabCloseRequested(int index)
 
 				case SaveAccessDenied:
 				QMessageBox::warning(this, "Access denied", "Error opening \"" + filePath + "\" for writing");
-				return;
+				return false;
 
 				case SaveDirectoryDoesntExist:
 				QMessageBox::warning(this, "Directory doesn't exist", "Error opening \"" + filePath + "\" for writing");
-				return;
+				return false;
 
 				case SaveWriteError:
 				QMessageBox::warning(this, "Write error", "Error writing \"" + filePath + "\"");
-				return;
+				return false;
 			}
 		}
 	}
 	_tabs->removeTab(index);
+	return true;
 }
 
 void EditPane::_slot_TabRemoved(TabContext *context)

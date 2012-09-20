@@ -1,8 +1,24 @@
 #include "EditPaneTabs.h"
+#include "TabContext.h"
 #include "LoadIcon.h"
 
+#include <QApplication>
+#include <QClipboard>
+#include <QFileInfo>
+#include <QUrl>
+#include <QMouseEvent>
+#include <QMenu>
 #include <QVariant>
 //#include <QDebug>
+
+#if   defined(Q_OS_WIN)
+#include <QProcess>
+#elif defined(Q_OS_MAC)
+#include <QProcess>
+#include <QStringList>
+#else
+#include <QDesktopServices>
+#endif
 
 namespace fedup {
 
@@ -94,6 +110,90 @@ void EditPaneTabs::_slot_TabMoved(int from, int to)
 	Q_UNUSED(to);
 	//qDebug() << "_slot_TabMoved(" << from << "," << to << ")";
 	_lastIndex = currentIndex();
+}
+
+void EditPaneTabs::mousePressEvent(QMouseEvent *event)
+{
+	if (event->button() != Qt::RightButton)
+		return QTabBar::mousePressEvent(event);
+
+	// compute the tab number
+	const QPoint position = event->pos();
+	const int clickedTabIndex = _GetTabAt(position);
+
+	if (clickedTabIndex == -1)
+		return QTabBar::mousePressEvent(event);
+
+	QMenu menu;
+	QAction * const closeAction        = menu.addAction("Close");
+	QAction * const closeAllButAction  = menu.addAction("Close All BUT This");
+	// QAction * const saveAction         = menu.addAction("Save");
+	// QAction * const saveAsAction       = menu.addAction("Save As");
+	// QAction * const renameAction       = menu.addAction("Rename");
+	// QAction * const deleteAction       = menu.addAction("Delete");
+	menu.addSeparator();
+	QAction * const showFolderAction   = menu.addAction("Show Containing Folder");
+	menu.addSeparator();
+	QAction * const fullFilePathAction = menu.addAction("Full File Path to Clipboard");
+	QAction * const filenameAction     = menu.addAction("Filename to Clipboard");
+	QAction * const directoryAction    = menu.addAction("Directory Path to Clipboard");
+
+	QAction * const picked = menu.exec(event->globalPos());
+
+	if (picked == NULL)
+	{
+		event->ignore();
+		return;
+	}
+	event->accept();
+	if (picked == closeAction)
+	{
+		emit tabCloseRequested(clickedTabIndex);
+	}
+	else if (picked == closeAllButAction)
+	{
+		emit tabCloseAllButRequested(clickedTabIndex);
+	}
+	else if (picked == showFolderAction)
+	{
+		const QString filePath = tabContext(clickedTabIndex)->filePath;
+		// TODO move this into a class or function somewhere
+#if   defined(Q_OS_WIN)
+		QProcess::startDetached("explorer.exe", QStringList("/select," + QFileInfo(filePath).fileName()), QFileInfo(filePath).absolutePath());
+#elif defined(Q_OS_MAC)
+		QStringList scriptArgs;
+		scriptArgs << "-e" << QString("tell application \"Finder\" to reveal POSIX file \"%1\"").arg(QFileInfo(filePath).absoluteFilePath());
+		QProcess::execute("/usr/bin/osascript", scriptArgs);
+		scriptArgs.clear();
+		scriptArgs << "-e" << "tell application \"Finder\" to activate";
+		QProcess::execute("/usr/bin/osascript", scriptArgs);
+#else
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(filePath).absolutePath()));
+#endif
+	}
+	else if (picked == fullFilePathAction)
+	{
+		QApplication::clipboard()->setText(QFileInfo(tabContext(clickedTabIndex)->filePath).absoluteFilePath());
+	}
+	else if (picked == filenameAction)
+	{
+		QApplication::clipboard()->setText(QFileInfo(tabContext(clickedTabIndex)->filePath).fileName());
+	}
+	else if (picked == directoryAction)
+	{
+		QApplication::clipboard()->setText(QFileInfo(tabContext(clickedTabIndex)->filePath).absolutePath());
+	}
+}
+
+int EditPaneTabs::_GetTabAt(const QPoint &point) const
+{
+	const int totalTabCount = count();
+	for (int i = 0; i < totalTabCount; i++)
+	{
+		if (tabRect(i).contains(point))
+			return i;
+	}
+	return -1;
 }
 
 } // namespace fedup

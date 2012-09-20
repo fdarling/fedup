@@ -28,10 +28,13 @@ signals:
 	void containsTabsChanged(bool hasTabs);
 	void tabRemoved(TabContext *context);
 	void tabChanged(TabContext *context, TabContext *oldContext);
+	void tabCloseAllButRequested(int index);
 protected slots:
 	void _slot_CurrentChanged(int index);
 	void _slot_TabMoved(int from, int to);
 protected:
+	void mousePressEvent(QMouseEvent *event);
+	int _GetTabAt(const QPoint &point) const;
 	int _lastIndex;
 };
 
