@@ -34,7 +34,6 @@ protected slots:
 	void _slot_TabMoved(int from, int to);
 protected:
 	void mousePressEvent(QMouseEvent *event);
-	int _GetTabAt(const QPoint &point) const;
 	int _lastIndex;
 };
 

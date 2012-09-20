@@ -119,7 +119,7 @@ void EditPaneTabs::mousePressEvent(QMouseEvent *event)
 
 	// compute the tab number
 	const QPoint position = event->pos();
-	const int clickedTabIndex = _GetTabAt(position);
+	const int clickedTabIndex = tabAt(position);
 
 	if (clickedTabIndex == -1)
 		return QTabBar::mousePressEvent(event);
@@ -183,17 +183,6 @@ void EditPaneTabs::mousePressEvent(QMouseEvent *event)
 	{
 		QApplication::clipboard()->setText(QFileInfo(tabContext(clickedTabIndex)->filePath).absolutePath());
 	}
-}
-
-int EditPaneTabs::_GetTabAt(const QPoint &point) const
-{
-	const int totalTabCount = count();
-	for (int i = 0; i < totalTabCount; i++)
-	{
-		if (tabRect(i).contains(point))
-			return i;
-	}
-	return -1;
 }
 
 } // namespace fedup
