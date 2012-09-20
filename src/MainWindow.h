@@ -23,6 +23,10 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = NULL);
 	~MainWindow();
+	bool isAlwaysOnTop() const;
+signals:
+	void sig_AlwaysOnTopChanged(bool onTop);
+	void sig_FullscreenChanged(bool onTop);
 public slots:
 	void open();
 	void open(const QString &filePath);
@@ -32,10 +36,13 @@ public slots:
 protected slots:
 	void _slot_SearchGoTo();
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
+	void _slot_SetAlwaysOnTop(bool onTop);
+	void _slot_SetFullscreen(bool fullscreen);
 protected:
 	void _SetupActions();
 	void _SetupConnections();
 
+	void showEvent(QShowEvent *event);
 	void closeEvent(QCloseEvent *event);
 
 	QSettings _settings;

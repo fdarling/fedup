@@ -18,6 +18,11 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 // #include <QDebug>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 namespace fedup {
 
 extern const QString FILE_TYPES_STRING; // defined at the bottom of this file
@@ -34,11 +39,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	_gotoDialog(new GoToDialog(this)),
 	_searchResultsDock(new SearchResultsDock)
 {
+	_toolbar->setObjectName("toolbar");
+	_searchResultsDock->setObjectName("search_results");
 	setMenuBar(_menubar);
 	addToolBar(_toolbar);
 	setStatusBar(_statusbar);
 	setCentralWidget(_editpane);
-	_searchResultsDock->hide();
 	addDockWidget(Qt::BottomDockWidgetArea, _searchResultsDock);
 
 	_SetupActions();
@@ -46,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if (!restoreGeometry(_settings.value("window_geometry").toByteArray()))
 		setGeometry(QRect(50, 50, 800, 600));
+	if (!restoreState(_settings.value("window_state").toByteArray()))
+		_searchResultsDock->hide();
+	_slot_SetAlwaysOnTop(_settings.value("window_always_on_top", QVariant(false)).toBool());
 	_currentDirectory = _settings.value("working_directory").toString();
 
 	// reopen the previously open files
@@ -54,10 +63,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-	_settings.setValue("window_geometry", saveGeometry());
-	_settings.setValue("working_directory", _currentDirectory);
-	_editpane->saveSession(_settings);
-	_menubar->recentFilesList()->saveSettings(_settings);
 }
 
 void MainWindow::_SetupActions()
@@ -117,9 +122,30 @@ void MainWindow::_SetupActions()
 	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
 
+	// make the actions know when they are available
 	_actions->viewSearchResults->setChecked(_searchResultsDock->isVisible());
-	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
+	// _actions->viewFullscreen->setChecked(isFullScreen()); // TODO figure out why this doesn't fully work
+	// _actions->viewFullscreen->setChecked(windowState().testFlag(Qt::WindowFullScreen)); // TODO figure out if this is better than the above method, NOTE: this doesn't seem to work, I have to use showEvent to track it instead...
+	_actions->viewAlwaysOnTop->setChecked(isAlwaysOnTop());
+	_actions->viewSymbolWhitespace->setChecked(e->whitespaceVisibility() != QsciScintilla::WsInvisible);
+	_actions->viewSymbolNewlines->setChecked(e->eolVisibility());
+	_actions->viewIndentationGuide->setChecked(e->indentationGuides());
 	connect(_searchResultsDock, SIGNAL(visibilityChanged(bool)), _actions->viewSearchResults, SLOT(setChecked(bool)));
+	connect(this, SIGNAL(sig_AlwaysOnTopChanged(bool)), _actions->viewAlwaysOnTop, SLOT(setChecked(bool)));
+	connect(this, SIGNAL(sig_FullscreenChanged(bool)), _actions->viewFullscreen, SLOT(setChecked(bool)));
+
+	connect(_actions->viewAlwaysOnTop, SIGNAL(toggled(bool)), this, SLOT(_slot_SetAlwaysOnTop(bool)));
+	connect(_actions->viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(_slot_SetFullscreen(bool)));
+	connect(_actions->viewSymbolWhitespace, SIGNAL(toggled(bool)), e, SLOT(setWhitespaceVisible(bool)));
+	connect(_actions->viewIndentationGuide, SIGNAL(toggled(bool)), e, SLOT(setIndentationGuides(bool)));
+	connect(_actions->viewSymbolNewlines, SIGNAL(toggled(bool)), e, SLOT(setEolVisibility(bool)));
+	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
+
+	// make the actions know when they are available
+	_actions->macroStartRecording->setEnabled(false);
+	_actions->macroStopRecording->setEnabled(false);
+	_actions->macroPlayback->setEnabled(false);
+	_actions->macroRunMultiple->setEnabled(false);
 }
 
 void MainWindow::_SetupConnections()
@@ -270,21 +296,73 @@ void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 		setWindowTitle("fedup");
 }
 
+static const Qt::WindowFlags onTopFlags = (Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
+
+void MainWindow::_slot_SetAlwaysOnTop(bool onTop)
+{
+	// TODO check if we are already set the way we want and do not re-emit a signal if so
+#ifdef Q_OS_WIN
+	if (onTop)
+		SetWindowPos(winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	else
+		SetWindowPos(winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+#else
+	Qt::WindowFlags flags = windowFlags();
+	if (onTop)
+		flags |= onTopFlags;
+	else
+		flags &= ~onTopFlags;
+	setWindowFlags(flags);
+	show();
+#endif
+	emit sig_AlwaysOnTopChanged(onTop);
+}
+
+bool MainWindow::isAlwaysOnTop() const
+{
+#ifdef Q_OS_WIN
+	return ((GetWindowLong(winId(), GWL_EXSTYLE) & WS_EX_TOPMOST) == WS_EX_TOPMOST);
+#else
+	return (windowFlags() & onTopFlags) == onTopFlags;
+#endif
+}
+
+void MainWindow::_slot_SetFullscreen(bool fullscreen)
+{
+	if (windowState().testFlag(Qt::WindowFullScreen) == fullscreen)
+		return;
+	if (fullscreen)
+		showFullScreen();
+	else
+		showNormal();
+	// TODO find out which method is better, perhaps they are equivalent?
+	/*if (fullscreen)
+		setWindowState(windowState() | Qt::WindowFullScreen);
+	else
+		setWindowState(windowState() & ~Qt::WindowFullScreen);*/
+	emit sig_FullscreenChanged(fullscreen);
+}
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+	_actions->viewFullscreen->setChecked(isFullScreen());
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	/*if (maybeSave())
+	ExitSaveDialog exitSaveDialog(this);
+	if (exitSaveDialog.shouldClose(this, _editpane))
 	{
-		writeSettings();*/
-		ExitSaveDialog exitSaveDialog(this);
-		if (exitSaveDialog.shouldClose(this, _editpane))
-			event->accept();
-		else
-			event->ignore();
-	/*}
+		_settings.setValue("window_always_on_top", isAlwaysOnTop());
+		_settings.setValue("window_state", saveState());
+		_settings.setValue("window_geometry", saveGeometry());
+		_settings.setValue("working_directory", _currentDirectory);
+		_editpane->saveSession(_settings);
+		_menubar->recentFilesList()->saveSettings(_settings);
+		event->accept();
+	}
 	else
-	{
 		event->ignore();
-	}*/
 }
 
 } // namespace fedup

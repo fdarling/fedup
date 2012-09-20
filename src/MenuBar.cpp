@@ -68,10 +68,21 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 	}
 	{
 		QMenu * const viewMenu = this->addMenu("&View");
-		// viewMenu->addAction("Always on Top", this, SLOT(setAlwaysOnTop(bool)))->setCheckable(true); // TODO reenable
-		// viewMenu->addAction("Toggle Full Screen Mode", this, SLOT(setFullscreen(bool)), QKeySequence("F11"))->setCheckable(true);
+		viewMenu->addAction(actions->viewAlwaysOnTop);
+		viewMenu->addAction(actions->viewFullscreen);
+		viewMenu->addSeparator();
+		viewMenu->addAction(actions->viewSymbolWhitespace);
+		viewMenu->addAction(actions->viewSymbolNewlines);
 		// viewMenu->addAction("Post-It", this, SLOT(setPostit(bool)), QKeySequence("F12"))->setCheckable(true);
+		viewMenu->addSeparator();
 		viewMenu->addAction(actions->viewSearchResults);
+	}
+	{
+		QMenu * const macroMenu = this->addMenu("Macro");
+		macroMenu->addAction(actions->macroStartRecording);
+		macroMenu->addAction(actions->macroStopRecording);
+		macroMenu->addAction(actions->macroPlayback);
+		macroMenu->addAction(actions->macroRunMultiple);
 	}
 }
 

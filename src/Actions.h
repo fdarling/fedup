@@ -48,7 +48,17 @@ public:
 	QAction *searchReplace;
 	QAction *searchGoTo;
 
+	QAction *viewAlwaysOnTop;
+	QAction *viewFullscreen;
 	QAction *viewSearchResults;
+	QAction *viewSymbolWhitespace;
+	QAction *viewSymbolNewlines;
+	QAction *viewIndentationGuide;
+
+	QAction *macroStartRecording;
+	QAction *macroStopRecording;
+	QAction *macroPlayback;
+	QAction *macroRunMultiple;
 protected:
 	QAction * GenAction(const QString &name, const QString &seq, const QString &iconFilename);
 };

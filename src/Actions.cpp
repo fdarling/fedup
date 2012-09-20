@@ -44,8 +44,23 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	searchReplace = GenAction("&Replace...", "Ctrl+R", "findReplace.bmp");
 	searchGoTo = GenAction("&Go to...", "Ctrl+G", "");
 
+	viewAlwaysOnTop = GenAction("Always on Top", "", "");
+	viewFullscreen = GenAction("Toggle Fullscreen", "F11", "");
 	viewSearchResults = GenAction("Search Results", "F7", "");
+	viewSymbolWhitespace = GenAction("Show White Space and TAB", "", "");
+	viewSymbolNewlines = GenAction("Show End of Line", "", "");
+	viewIndentationGuide = GenAction("Show Indent Guide", "", "");
+	viewAlwaysOnTop->setCheckable(true);
+	viewFullscreen->setCheckable(true);
 	viewSearchResults->setCheckable(true);
+	viewSymbolWhitespace->setCheckable(true);
+	viewSymbolNewlines->setCheckable(true);
+	viewIndentationGuide->setCheckable(true);
+
+	macroStartRecording = GenAction("Start Re&cording", "" , "startRecord.bmp");
+	macroStopRecording = GenAction("S&top Recording", "" , "stopRecord.bmp");
+	macroPlayback = GenAction("&Playback", "" , "playRecord.bmp");
+	macroRunMultiple = GenAction("&Run Macro Multiple Times", "" , "playRecord_m.bmp");
 }
 
 Actions::~Actions()

@@ -19,6 +19,11 @@ ToolBar::ToolBar(Actions *actions, QWidget *parent) : QToolBar(parent)
 	addSeparator();
 	addAction(actions->searchFind);
 	addAction(actions->searchReplace);
+	addSeparator();
+	addAction(actions->macroStartRecording);
+	addAction(actions->macroStopRecording);
+	addAction(actions->macroPlayback);
+	addAction(actions->macroRunMultiple);
 }
 
 ToolBar::~ToolBar()

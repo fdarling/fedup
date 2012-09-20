@@ -13,3 +13,4 @@
 - Add macro support
 - Fix the tab bar's visibility when the program launches restoring previously opened tabs (an issue on Linux at least)
 - Get to the bottom of why CTRL+U is being intercepted or overridden somewhere
+- Save various settings, such as whitespace visibility and find dialog state

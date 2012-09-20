@@ -385,6 +385,12 @@ void FScintilla::trimTrailingWhitespace()
 	endUndoAction();
 }
 
+void FScintilla::setWhitespaceVisible(bool vis)
+{
+	// TODO possibly have a signal emitted?
+	setWhitespaceVisibility(vis ? WsVisible : WsInvisible);
+}
+
 void FScintilla::wheelEvent(QWheelEvent *event)
 {
 	if (event->modifiers() == Qt::ControlModifier && event->orientation() == Qt::Vertical)
