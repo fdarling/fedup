@@ -214,6 +214,7 @@ public:
 		vbox->addStretch();
 		vbox->addWidget(closeButton);
 
+		followCurrentDocCheckbox->setChecked(true);
 		subfoldersCheckbox->setChecked(true);
 	}
 public:
@@ -388,6 +389,7 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(buttonsArea->find->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindAll()));
 	connect(buttonsArea->replace->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->findInFiles->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindInFiles()));
+	connect(buttonsArea->findInFiles->followCurrentDocCheckbox, SIGNAL(toggled(bool)), this, SLOT(_slot_MaybeUpdateDirectoryText()));
 	connect(buttonsArea->findInFiles->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->mark->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->find->findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
@@ -465,6 +467,12 @@ void FindDialog::findPrev()
 	_slot_FindNext();
 	if (!alreadyChecked)
 		optionsArea->downDirection->setChecked(true); // HACK
+}
+
+void FindDialog::setCurrentDirectory(const QString &dirPath)
+{
+	_currentDirectory = dirPath;
+	_slot_MaybeUpdateDirectoryText();
 }
 
 bool FindDialog::_FindFirst(bool skipSelection)
@@ -701,6 +709,12 @@ void FindDialog::_slot_FindReplaceTextChanged()
 void FindDialog::_slot_DirectoryTextChanged()
 {
 	_slot_FindReplaceTextChanged();
+}
+
+void FindDialog::_slot_MaybeUpdateDirectoryText()
+{
+	if (buttonsArea->findInFiles->followCurrentDocCheckbox->isChecked())
+		comboboxArea->directoryCombobox->lineEdit()->setText(_currentDirectory);
 }
 
 void FindDialog::showEvent(QShowEvent *event)

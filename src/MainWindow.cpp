@@ -295,6 +295,7 @@ void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 		setWindowTitle(context->filePath + " - fedup");
 		if (context->filePath.size() != 0)
 			_currentDirectory = QFileInfo(context->filePath).absolutePath();
+		_findDialog->setCurrentDirectory(_currentDirectory); // TODO use a signal to communicate instead? perhaps it isn't necessary...
 	}
 	else
 		setWindowTitle("fedup");

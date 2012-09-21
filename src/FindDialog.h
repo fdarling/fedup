@@ -30,6 +30,7 @@ public slots:
 	void showFindInFiles();
 	void findNext();
 	void findPrev();
+	void setCurrentDirectory(const QString &dirPath);
 signals:
 	void sig_SearchStarted(const QString &term);
 	void sig_ResultFound(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
@@ -47,6 +48,7 @@ protected slots:
 	void _slot_CurrentChanged(int index);
 	void _slot_FindReplaceTextChanged();
 	void _slot_DirectoryTextChanged();
+	void _slot_MaybeUpdateDirectoryText();
 protected:
 	void showEvent(QShowEvent *event);
 	void hideEvent(QHideEvent *event);
@@ -71,6 +73,7 @@ protected:
 	FScintilla *_editor;
 	FScintilla *_hiddenEditor;
 	QRect _geometry;
+	QString _currentDirectory;
 };
 
 } // namespace fedup

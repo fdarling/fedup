@@ -87,7 +87,7 @@ void SearchResultsDock::endSearch()
 
 void SearchResultsDock::clear()
 {
-	_editor->clear();
+	_editor->setText(QString());
 	// SendScintilla(SCI_MARKERDELETEALL, FSCINTILLA_ACTIVELINE_MARKER_ID);
 }
 
