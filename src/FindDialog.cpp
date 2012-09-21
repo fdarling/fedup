@@ -536,7 +536,7 @@ void FindDialog::_FindInFiles(bool replacing)
 	if (buttonsArea->findInFiles->subfoldersCheckbox->isChecked())
 		iterator_flags |= QDirIterator::Subdirectories;
 	const QStringList filters = comboboxArea->filtersCombobox->currentText().split(QRegExp("\\s+"));
-	bool useFilters = (filters.size() != 0);
+	bool useFilters = !filters.isEmpty();
 	for (QStringList::const_iterator it = filters.begin(); it != filters.end(); ++it)
 	{
 		if (*it == "*" || *it == "*.*")
@@ -628,9 +628,8 @@ void FindDialog::_slot_ReplaceInFiles()
 
 void FindDialog::_slot_Browse()
 {
-	// TODO
-	const QString dirPath = QFileDialog::getExistingDirectory(this);
-	if (dirPath.size() != 0)
+	const QString dirPath = QFileDialog::getExistingDirectory(this, QString(), comboboxArea->directoryCombobox->currentText().isEmpty() ? _currentDirectory : comboboxArea->directoryCombobox->currentText());
+	if (!dirPath.isEmpty())
 		comboboxArea->directoryCombobox->lineEdit()->setText(dirPath);
 }
 
@@ -668,23 +667,23 @@ void FindDialog::_slot_CurrentChanged(int index)
 
 bool FindDialog::_IsFindEnabled() const
 {
-	return (comboboxArea->findCombobox->currentText().size() != 0);
+	return !comboboxArea->findCombobox->currentText().isEmpty();
 }
 
 bool FindDialog::_IsFindInFilesEnabled() const
 {
-	return _IsFindEnabled() && (comboboxArea->directoryCombobox->currentText().size() != 0);
+	return _IsFindEnabled() && !comboboxArea->directoryCombobox->currentText().isEmpty();
 }
 
 bool FindDialog::_IsReplaceEnabled() const
 {
 	// NOTE: replacing with nothing is allowed!
-	return /*(comboboxArea->replaceCombobox->currentText().size() != 0) && */_IsFindEnabled();
+	return /*(!comboboxArea->replaceCombobox->currentText().isEmpty()) && */_IsFindEnabled();
 }
 
 bool FindDialog::_IsReplaceInFilesEnabled() const
 {
-	return _IsReplaceEnabled() && (comboboxArea->directoryCombobox->currentText().size() != 0);
+	return _IsReplaceEnabled() && !comboboxArea->directoryCombobox->currentText().isEmpty();
 }
 
 void FindDialog::_slot_FindReplaceTextChanged()
@@ -724,7 +723,7 @@ void FindDialog::showEvent(QShowEvent *event)
 	{
 		// TODO set the directoryCombobox text based on the current document, if that behavior is enabled
 		const QString selectedText = _editor->selectedText();
-		if (selectedText.size() != 0)
+		if (!selectedText.isEmpty())
 			comboboxArea->findCombobox->lineEdit()->setText(selectedText);
 		if (!_geometry.isNull())
 			setGeometry(_geometry);

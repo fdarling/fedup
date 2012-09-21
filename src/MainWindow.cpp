@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		_searchResultsDock->hide();
 	_slot_SetAlwaysOnTop(_settings.value("window_always_on_top", QVariant(false)).toBool());
 	_currentDirectory = _settings.value("working_directory").toString();
+	_findDialog->setCurrentDirectory(_currentDirectory);
 
 	// reopen the previously open files
 	_editpane->loadSession(_settings);
@@ -293,7 +294,7 @@ void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 	if (context)
 	{
 		setWindowTitle(context->filePath + " - fedup");
-		if (context->filePath.size() != 0)
+		if (!context->filePath.isEmpty())
 			_currentDirectory = QFileInfo(context->filePath).absolutePath();
 		_findDialog->setCurrentDirectory(_currentDirectory); // TODO use a signal to communicate instead? perhaps it isn't necessary...
 	}

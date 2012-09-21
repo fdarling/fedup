@@ -93,7 +93,7 @@ bool ExitSaveDialog::shouldClose(MainWindow *mainWindow, EditPane *editPane)
 			// if (1)
 			{
 				_table->setRowCount(rowIndex+1);
-				QTableWidgetItem * const filePathItem = new QTableWidgetItem((editPane->tabs()->tabContext(i)->filePath.size() != 0) ? editPane->tabs()->tabContext(i)->filePath : editPane->tabs()->tabText(i));
+				QTableWidgetItem * const filePathItem = new QTableWidgetItem((!editPane->tabs()->tabContext(i)->filePath.isEmpty()) ? editPane->tabs()->tabContext(i)->filePath : editPane->tabs()->tabText(i));
 				filePathItem->setData(Qt::UserRole, i);
 				filePathItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 				filePathItem->setCheckState(Qt::Unchecked);

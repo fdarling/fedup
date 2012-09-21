@@ -122,7 +122,7 @@ OpenResult EditPane::open(const QString &filePath)
 		}
 		_editor->setModified(false); // TODO figure out why this makes it not modified, but then makes the undo option available unto a context switch :-/
 		_editor->setDocument(_editor->document()); // HACK to correct the above glitch
-		if (absoluteFilePath.size() != 0)
+		if (!absoluteFilePath.isEmpty())
 			_editor->setLexer(LexerPicker::chooseLexer(filename));
 		return OpenSucceeded;
 	}
@@ -157,7 +157,7 @@ SaveResult EditPane::saveAs(const QString &filePath)
 	}
 	_editor->setModified(false);
 	const QString filename = info.fileName();
-	if (absoluteFilePath.size() != 0)
+	if (!absoluteFilePath.isEmpty())
 		_editor->setLexer(LexerPicker::chooseLexer(filename));
 	return SaveSucceeded;
 }
@@ -247,7 +247,7 @@ bool EditPane::_TryClosingTab(int index)
 void EditPane::_slot_TabRemoved(TabContext *context)
 {
 	//qDebug() << ">> Tab removed:" << context;
-	if (context->filePath.size() != 0)
+	if (!context->filePath.isEmpty())
 		_openFiles.remove(context->filePath, context);
 	delete context;
 }
