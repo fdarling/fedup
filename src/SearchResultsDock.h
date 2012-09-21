@@ -17,10 +17,11 @@ public:
 	SearchResultsDock(QWidget *parent = NULL);
 	~SearchResultsDock();
 
+	void clear();
+public slots:
 	void startSearch(const QString &term);
 	void addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
 	void endSearch();
-	void clear();
 protected:
 	void _FinishFile();
 	QsciScintilla *_editor;

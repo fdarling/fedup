@@ -167,6 +167,10 @@ void MainWindow::_SetupConnections()
 	connect(_menubar->recentFilesList(), SIGNAL(recentFileClicked(const QString &)), this, SLOT(open(const QString &)));
 
 	connect(tabs, SIGNAL(tabChanged(TabContext *, TabContext *)), this, SLOT(_slot_TabChanged(TabContext *, TabContext *)));
+
+	connect(_findDialog, SIGNAL(sig_SearchStarted(const QString &)), _searchResultsDock, SLOT(startSearch(const QString &)));
+	connect(_findDialog, SIGNAL(sig_ResultFound(const QString &, int, const QString &, int, int)), _searchResultsDock, SLOT(addResult(const QString &, int, const QString &, int, int)));
+	connect(_findDialog, SIGNAL(sig_SearchEnded()), _searchResultsDock, SLOT(endSearch()));
 }
 
 void MainWindow::open()
@@ -331,15 +335,16 @@ void MainWindow::_slot_SetFullscreen(bool fullscreen)
 {
 	if (windowState().testFlag(Qt::WindowFullScreen) == fullscreen)
 		return;
-	if (fullscreen)
+	/*if (fullscreen)
 		showFullScreen();
 	else
-		showNormal();
+		showNormal();*/
 	// TODO find out which method is better, perhaps they are equivalent?
-	/*if (fullscreen)
+	// NOTE: I figured out the above method doesn't account for showMaximized(), this the below method is better
+	if (fullscreen)
 		setWindowState(windowState() | Qt::WindowFullScreen);
 	else
-		setWindowState(windowState() & ~Qt::WindowFullScreen);*/
+		setWindowState(windowState() & ~Qt::WindowFullScreen);
 	emit sig_FullscreenChanged(fullscreen);
 }
 

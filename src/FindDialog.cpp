@@ -19,10 +19,10 @@
 #include <QLineEdit>
 
 #include <QApplication>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QDirIterator>
 #include <QScopedPointer>
-#include <QDebug>
 
 namespace fedup {
 
@@ -113,7 +113,7 @@ public:
 		countButton = new QPushButton("Count", this);
 		findAllButton = new QPushButton("Find All", this);
 		closeButton = new QPushButton("Close", this);
-		findAllInOpenDocumentsButton = new QPushButton("Find All in All Opened\nDocuments", this);
+		findAllInOpenDocumentsButton = new QPushButton("Find All in All Tabs", this);
 		vbox->addWidget(findNextButton);
 		vbox->addWidget(countButton);
 		vbox->addWidget(findAllButton);
@@ -146,7 +146,7 @@ public:
 		findNextButton = new QPushButton("Find Next", this);
 		replaceButton = new QPushButton("Replace", this);
 		replaceAllButton = new QPushButton("Replace All", this);
-		replaceAllInOpenDocumentsButton = new QPushButton("Replace All in All Opened\nDocuments", this);
+		replaceAllInOpenDocumentsButton = new QPushButton("Replace All in All Tabs", this);
 		closeButton = new QPushButton("Close", this);
 		vbox->addWidget(findNextButton);
 		vbox->addWidget(replaceButton);
@@ -384,6 +384,8 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	connect(_tabbar, SIGNAL(currentChanged(int)), buttonsArea->stack, SLOT(setCurrentIndex(int)));
 	connect(_tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
 	connect(buttonsArea->find->closeButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(buttonsArea->find->countButton, SIGNAL(clicked()), this, SLOT(_slot_Count()));
+	connect(buttonsArea->find->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindAll()));
 	connect(buttonsArea->replace->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(buttonsArea->findInFiles->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindInFiles()));
 	connect(buttonsArea->findInFiles->closeButton, SIGNAL(clicked()), this, SLOT(close()));
@@ -497,9 +499,26 @@ bool FindDialog::_Replace()
 	return true;
 }
 
+void FindDialog::_slot_Count()
+{
+	_hiddenEditor->setDocument(_editor->document());
+	const int hitCount = _FindHelper(QString(), false);
+	QMessageBox::information(this, "Occurrence Count", QString::number(hitCount));
+	_hiddenEditor->setDocument(QsciDocument());
+}
+
+void FindDialog::_slot_FindAll()
+{
+	emit sig_SearchStarted(comboboxArea->findCombobox->currentText());
+	_hiddenEditor->setDocument(_editor->document());
+	_FindHelper("TODO FILENAME HERE", true);
+	_hiddenEditor->setDocument(QsciDocument());
+	emit sig_SearchEnded();
+}
+
 void FindDialog::_FindInFiles(bool replacing)
 {
-	qDebug() << "_FindInFiles():";
+	emit sig_SearchStarted(comboboxArea->findCombobox->currentText());
 	QDir::Filters dir_filters = QDir::Files | QDir::Readable;
 	if (replacing)
 		dir_filters |= QDir::Writable;
@@ -522,25 +541,46 @@ void FindDialog::_FindInFiles(bool replacing)
 	while (it.hasNext())
 	{
 		const QString filePath = it.next();
-		qDebug() << "\tSearching through file:" << filePath;
 		_hiddenEditor->setDocument(QsciDocument());
 		QFile file(filePath);
 
 		if (file.open(QIODevice::ReadOnly) && _hiddenEditor->read(&file))
 		{
-			for (bool foundSomething = _hiddenEditor->findFirst(optionsArea->extendedMode->isChecked() ? ConvertFromExtended(comboboxArea->findCombobox->currentText()) : comboboxArea->findCombobox->currentText(), optionsArea->regularExpressionMode->isChecked(), optionsArea->caseSensitive->isChecked(), optionsArea->wholeWord->isChecked(), false, true, -1, -1, false); foundSomething; foundSomething = _hiddenEditor->findNext())
-			{
-				int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
-				_hiddenEditor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-				if (lineFrom == lineTo)
-					qDebug() << "\t\tLine " << (lineFrom + 1) << ":" << _hiddenEditor->selectedText();
-				else
-					qDebug() << "\t\tLines" << (lineFrom + 1) << "-" << (lineTo + 1) << ":" << _hiddenEditor->selectedText();
-			}
+			_FindHelper(filePath, true);
 		}
 		_hiddenEditor->setDocument(QsciDocument());
 	}
-	qDebug () << "Done crawling directories";
+	emit sig_SearchEnded();
+
+}
+
+int FindDialog::_FindHelper(const QString &filePath, bool emitting)
+{
+	int hitCount = 0;
+	for (bool foundSomething = _hiddenEditor->findFirst(optionsArea->extendedMode->isChecked() ? ConvertFromExtended(comboboxArea->findCombobox->currentText()) : comboboxArea->findCombobox->currentText(), optionsArea->regularExpressionMode->isChecked(), optionsArea->caseSensitive->isChecked(), optionsArea->wholeWord->isChecked(), false, true, -1, -1, false); foundSomething; foundSomething = _hiddenEditor->findNext(), hitCount++)
+	{
+		if (emitting)
+		{
+			int lineFrom = -1, indexFrom = -1, lineTo = -1, indexTo = -1;
+			_hiddenEditor->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+			QString result;
+			for (int i = lineFrom; i <= lineTo; i++)
+			{
+				QString lineText = _hiddenEditor->text(i);
+				if (i == lineTo)
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						if (lineText.endsWith('\n') || lineText.endsWith('\r'))
+							lineText.chop(1);
+					}
+				}
+				result.append(lineText);
+			}
+			emit sig_ResultFound(filePath, lineFrom, result, indexFrom, 1 /* TODO */ );
+		}
+	}
+	return hitCount;
 }
 
 void FindDialog::_slot_FindNext()

@@ -30,10 +30,16 @@ public slots:
 	void showFindInFiles();
 	void findNext();
 	void findPrev();
+signals:
+	void sig_SearchStarted(const QString &term);
+	void sig_ResultFound(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
+	void sig_SearchEnded();
 protected slots:
 	void _slot_FindNext();
 	void _slot_Replace();
 	void _slot_ReplaceAll();
+	void _slot_Count();
+	void _slot_FindAll();
 	void _slot_FindInFiles();
 	void _slot_ReplaceInFiles();
 	void _slot_Browse();
@@ -52,6 +58,7 @@ protected:
 	bool _IsFindInFilesEnabled() const;
 	bool _IsReplaceInFilesEnabled() const;
 	bool _IsReplaceEnabled() const;
+	int _FindHelper(const QString &filePath, bool emitting);
 
 	class ComboBoxArea;
 	class ButtonsArea;

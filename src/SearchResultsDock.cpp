@@ -44,8 +44,10 @@ SearchResultsDock::~SearchResultsDock()
 
 void SearchResultsDock::startSearch(const QString &term)
 {
+	clear(); // TODO have clearing done from a context menu and not automatically every search, perhaps an option to do it every search though?
 	_editor->insertAt("Search \"" + term + "\"\n", 0, 0);
 	_editor->SendScintilla(QsciScintillaBase::SCI_MARKERADD, 0, FSCINTILLA_SEARCHRESULTS_TERM_MARKER_ID);
+	_lastFilePath.clear();
 	_filePathLine = 1;
 	_currentLine = 1;
 	_fileCount = 0;
@@ -55,6 +57,7 @@ void SearchResultsDock::startSearch(const QString &term)
 
 void SearchResultsDock::addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength)
 {
+	setVisible(true);
 	if (_lastFilePath != filePath)
 	{
 		_FinishFile();
@@ -66,7 +69,7 @@ void SearchResultsDock::addResult(const QString &filePath, int line, const QStri
 		_hitCount = 0;
 	}
 	// TODO support multi-line hits
-	const QString prefix = "  Line " + QString::number(line).rightJustified(6) + ":\t";
+	const QString prefix = "  Line " + QString::number(line+1).rightJustified(6) + ":\t";
 	QString textBlock = result;
 	textBlock.replace('\n', QString('\n') + QString(' ').repeated(prefix.size()-1) + QString('\t'));
 	_editor->insertAt(prefix + textBlock + '\n', _currentLine, 0);
@@ -84,7 +87,7 @@ void SearchResultsDock::endSearch()
 
 void SearchResultsDock::clear()
 {
-	_editor->setText("");
+	_editor->clear();
 	// SendScintilla(SCI_MARKERDELETEALL, FSCINTILLA_ACTIVELINE_MARKER_ID);
 }
 
