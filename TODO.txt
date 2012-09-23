@@ -16,3 +16,4 @@
 - Save various settings, such as whitespace visibility and find dialog state
 - Finish tab context menu, implement document renaming/deleting
 - Figure out why the existing window isn't raising when opening files and triggering an existing window to open them
+- Finish "Simplify Whitespace"

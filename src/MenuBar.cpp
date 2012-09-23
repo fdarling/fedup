@@ -46,6 +46,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		editMenu->addAction(actions->editToggleBlockComment);
 		editMenu->addSeparator();
 		editMenu->addAction(actions->editTrimTrailingSpaces);
+		editMenu->addAction(actions->editSimplifyWhitespace);
 	}
 	{
 		QMenu * const searchMenu = this->addMenu("&Search");

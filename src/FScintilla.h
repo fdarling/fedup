@@ -31,6 +31,7 @@ public slots:
 	void moveLineDown();
 	void toggleCommented();
 	void trimTrailingWhitespace();
+	void simplifyWhitespace();
 	void setWhitespaceVisible(bool vis);
 protected slots:
 	void _slot_Scrolled();

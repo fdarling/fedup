@@ -36,6 +36,7 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	editMoveLineDown       = GenAction("Move Down Current Line", "Ctrl+Shift+Down", "");
 	editToggleBlockComment = GenAction("Toggle Block Comment",   "Ctrl+Q",          "");
 	editTrimTrailingSpaces = GenAction("Trim trailing spaces",   "",                "");
+	editSimplifyWhitespace = GenAction("Simplify Whitespace",    "",                "");
 
 	searchFind = GenAction("&Find...", "Ctrl+F", "find.bmp");
 	searchFindInFiles = GenAction("Find in Files...", "Ctrl+Shift+F", "");

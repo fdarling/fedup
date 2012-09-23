@@ -369,17 +369,26 @@ void FScintilla::trimTrailingWhitespace()
 	const int currentColumn = SendScintilla(SCI_GETCOLUMN, SendScintilla(SCI_GETCURRENTPOS));
 	while (true)
 	{
-		//printf("Finding trailing spaces...");
 		const bool result = findFirst("[ \t]+$", true, true, false, false, true, 0, 0, false);
 		if (!result)
-		{
-			//printf("Done!\n");
 			break;
-		}
-		//printf("found...\n");
-
-		replace("");
+		replace(QString());
 	}
+	SendScintilla(SCI_GOTOPOS, SendScintilla(SCI_FINDCOLUMN, currentLine, currentColumn));
+	verticalScrollBar()->setValue(scrollPos);
+	endUndoAction();
+}
+
+void FScintilla::simplifyWhitespace()
+{
+	beginUndoAction();
+	const int scrollPos = verticalScrollBar()->value();
+	const int currentLine = SendScintilla(SCI_LINEFROMPOSITION, SendScintilla(SCI_GETCURRENTPOS));
+	const int currentColumn = SendScintilla(SCI_GETCOLUMN, SendScintilla(SCI_GETCURRENTPOS));
+	SendScintilla(SCI_SETTARGETSTART, 0);
+	SendScintilla(SCI_SETTARGETEND, length());
+	SendScintilla(SCI_LINESJOIN);
+	// TODO replace runs of whitespace with a single whitespace
 	SendScintilla(SCI_GOTOPOS, SendScintilla(SCI_FINDCOLUMN, currentLine, currentColumn));
 	verticalScrollBar()->setValue(scrollPos);
 	endUndoAction();

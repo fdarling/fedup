@@ -40,6 +40,7 @@ public:
 	QAction *editMoveLineDown;
 	QAction *editToggleBlockComment;
 	QAction *editTrimTrailingSpaces;
+	QAction *editSimplifyWhitespace;
 
 	QAction *searchFind;
 	QAction *searchFindInFiles;

@@ -115,6 +115,7 @@ void MainWindow::_SetupActions()
 	connect(_actions->editMoveLineDown, SIGNAL(triggered()), e, SLOT(moveLineDown()));
 	connect(_actions->editToggleBlockComment, SIGNAL(triggered()), e, SLOT(toggleCommented()));
 	connect(_actions->editTrimTrailingSpaces, SIGNAL(triggered()), e, SLOT(trimTrailingWhitespace()));
+	connect(_actions->editSimplifyWhitespace, SIGNAL(triggered()), e, SLOT(simplifyWhitespace()));
 
 	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
 	connect(_actions->searchFindInFiles, SIGNAL(triggered()), _findDialog, SLOT(showFindInFiles()));
