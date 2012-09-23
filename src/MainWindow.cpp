@@ -15,9 +15,14 @@
 #include "FileFilters.h"
 
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
 // #include <QDebug>
+
+#include <limits>
+
+#include <Qsci/qscimacro.h>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -37,7 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	_editpane(new EditPane),
 	_findDialog(new FindDialog(_editpane->editor(), this)),
 	_gotoDialog(new GoToDialog(this)),
-	_searchResultsDock(new SearchResultsDock)
+	_searchResultsDock(new SearchResultsDock),
+	_editorMacro(NULL)
 {
 	_toolbar->setObjectName("toolbar");
 	_searchResultsDock->setObjectName("search_results");
@@ -64,6 +70,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	// TODO save the macro between program relaunches?
+	if (_editorMacro)
+		delete _editorMacro;
 }
 
 void MainWindow::_SetupActions()
@@ -144,10 +153,14 @@ void MainWindow::_SetupActions()
 	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
 
 	// make the actions know when they are available
-	_actions->macroStartRecording->setEnabled(false);
+	_actions->macroStartRecording->setEnabled(true);
 	_actions->macroStopRecording->setEnabled(false);
 	_actions->macroPlayback->setEnabled(false);
 	_actions->macroRunMultiple->setEnabled(false);
+	connect(_actions->macroStartRecording, SIGNAL(triggered()), this, SLOT(_slot_MacroStartRecording()));
+	connect(_actions->macroStopRecording, SIGNAL(triggered()), this, SLOT(_slot_MacroStopRecording()));
+	connect(_actions->macroPlayback, SIGNAL(triggered()), this, SLOT(_slot_MacroPlayback()));
+	connect(_actions->macroRunMultiple, SIGNAL(triggered()), this, SLOT(_slot_MacroRunMultiple()));
 }
 
 void MainWindow::_SetupConnections()
@@ -283,6 +296,76 @@ void MainWindow::_slot_SearchGoTo()
 	_gotoDialog->raise();
 	_gotoDialog->activateWindow();
 }
+
+void MainWindow::_slot_MacroStartRecording()
+{
+	_actions->macroStartRecording->setEnabled(false);
+	_actions->macroStopRecording->setEnabled(true);
+	FScintilla * const editor = _editpane->editor();
+	if (!_editorMacro || _editorMacro->parent() != editor)
+	{
+		if (_editorMacro)
+			delete _editorMacro;
+		_editorMacro = new QsciMacro(editor);
+		// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(_slot_MacroDestroyed()));
+	}
+	_editorMacro->startRecording();
+}
+
+void MainWindow::_slot_MacroStopRecording()
+{
+	_editorMacro->endRecording();
+	_actions->macroStartRecording->setEnabled(true);
+	_actions->macroStopRecording->setEnabled(false);
+	_actions->macroPlayback->setEnabled(true);
+	_actions->macroRunMultiple->setEnabled(true);
+}
+
+void MainWindow::_slot_MacroPlayback()
+{
+	FScintilla * const editor = _editpane->editor();
+	if (_editorMacro->parent() != editor)
+	{
+		QsciMacro * const oldMacro = _editorMacro;
+		const QString saved = oldMacro->save();
+		_editorMacro = new QsciMacro(saved, editor);
+		// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(slot_MacroDestroyed()));
+		delete oldMacro;
+	}
+	_editorMacro->play();
+}
+
+void MainWindow::_slot_MacroRunMultiple()
+{
+	// TODO save the numberOfTimes between dialog showings, and have a better dialog that supports "Run until the end of the file"
+	bool ok = false;
+	int numberOfTimes = QInputDialog::getInt(this, "Run a Macro Multiple Times", "Times:", 1, 1, std::numeric_limits<int>::max(), 1, &ok);
+	if (ok)
+	{
+		FScintilla * const editor = _editpane->editor();
+		if (_editorMacro->parent() != editor)
+		{
+			QsciMacro * const oldMacro = _editorMacro;
+			const QString saved = oldMacro->save();
+			_editorMacro = new QsciMacro(saved, editor);
+			// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(slot_MacroDestroyed()));
+			delete oldMacro;
+		}
+		for (; numberOfTimes > 0; numberOfTimes--)
+			_editorMacro->play();
+	}
+}
+
+/*void MainWindow::_slot_MacroDestroyed()
+{
+	if (!editorMacro)
+	{
+		macroStartAction->setEnabled(tabs->currentEditor() != NULL);
+		macroStopAction->setEnabled(false);
+		macroPlayAction->setEnabled(false);
+		macroPlayMultiAction->setEnabled(false);
+	}
+}*/
 
 void MainWindow::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 {

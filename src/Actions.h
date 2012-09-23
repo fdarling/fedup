@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAction>
+#include <QActionGroup>
 
 QT_BEGIN_NAMESPACE
 // class QAction;

@@ -5,6 +5,8 @@
 #include <QSettings>
 #include <QString>
 
+class QsciMacro;
+
 namespace fedup {
 
 class Actions;
@@ -35,6 +37,10 @@ public slots:
 	bool saveAs(const QString &filePath);
 protected slots:
 	void _slot_SearchGoTo();
+	void _slot_MacroStartRecording();
+	void _slot_MacroStopRecording();
+	void _slot_MacroPlayback();
+	void _slot_MacroRunMultiple();
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 	void _slot_SetAlwaysOnTop(bool onTop);
 	void _slot_SetFullscreen(bool fullscreen);
@@ -55,6 +61,7 @@ protected:
 	FindDialog *_findDialog;
 	GoToDialog *_gotoDialog;
 	SearchResultsDock *_searchResultsDock;
+	QsciMacro * _editorMacro;
 };
 
 } // namespace fedup
