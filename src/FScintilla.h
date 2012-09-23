@@ -12,7 +12,10 @@ public:
 	FScintilla(QWidget *parent = NULL);
 	~FScintilla();
 
+	void setFilePath(const QString &filePath);
 	void setDocument(const QsciDocument &doc);
+
+	QString filePath() const {return _filePath;}
 signals:
 	void selectionLengthChanged(int length);
 	void lineCountChanged(int lineCount);
@@ -74,6 +77,7 @@ protected:
 	} _smartHighlightedRange;
 	int _lastDeletedLine;
 	QString _deletedLines;
+	QString _filePath;
 };
 
 } // namespace fedup

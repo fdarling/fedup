@@ -519,7 +519,8 @@ void FindDialog::_slot_FindAll()
 {
 	emit sig_SearchStarted(comboboxArea->findCombobox->currentText());
 	_hiddenEditor->setDocument(_editor->document());
-	_FindHelper("TODO FILENAME HERE", true);
+	// TODO this doesn't handle unsaved files correctly!
+	_FindHelper(_editor->filePath(), true);
 	_hiddenEditor->setDocument(QsciDocument());
 	emit sig_SearchEnded();
 }

@@ -267,6 +267,7 @@ void EditPane::_slot_TabChanged(TabContext *context, TabContext *oldContext)
 		context->restore(_editor);
 	else
 	{
+		_editor->setFilePath(QString()); // TODO do _editor->setContext in either case
 		_editor->setDocument(QsciDocument()); // TODO do _editor->setContext in either case
 		QsciLexer * const lexer = _editor->lexer();
 		_editor->setLexer(NULL);

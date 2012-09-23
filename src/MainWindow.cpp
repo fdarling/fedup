@@ -186,6 +186,8 @@ void MainWindow::_SetupConnections()
 	connect(_findDialog, SIGNAL(sig_SearchStarted(const QString &)), _searchResultsDock, SLOT(startSearch(const QString &)));
 	connect(_findDialog, SIGNAL(sig_ResultFound(const QString &, int, const QString &, int, int)), _searchResultsDock, SLOT(addResult(const QString &, int, const QString &, int, int)));
 	connect(_findDialog, SIGNAL(sig_SearchEnded()), _searchResultsDock, SLOT(endSearch()));
+
+	connect(_searchResultsDock, SIGNAL(requestOpenFileLine(const QString &, int)), this, SLOT(_slot_OpenFileLine(const QString &, int)));
 }
 
 void MainWindow::open()
@@ -195,7 +197,7 @@ void MainWindow::open()
 		open(*it);
 }
 
-void MainWindow::open(const QString &filePath)
+bool MainWindow::open(const QString &filePath)
 {
 	QFileInfo info(filePath);
 	_currentDirectory = info.absolutePath();
@@ -223,19 +225,20 @@ void MainWindow::open(const QString &filePath)
 					_editpane->closeTab();
 			}
 		}
-		break;
+		return false;
 
 		case OpenAccessDenied:
 		QMessageBox::warning(this, "Access denied", "Can not open file \"" + absoluteFilePath + "\"");
-		break;
+		return false;
 
 		case OpenReadError:
 		QMessageBox::warning(this, "Read error", "Can not read file \"" + absoluteFilePath + "\"");
-		break;
+		return false;
 
 		case OpenAlreadyOpen:
 		break;
 	}
+	return true;
 }
 
 bool MainWindow::save()
@@ -432,6 +435,12 @@ void MainWindow::_slot_SetFullscreen(bool fullscreen)
 	else
 		setWindowState(windowState() & ~Qt::WindowFullScreen);
 	emit sig_FullscreenChanged(fullscreen);
+}
+
+void MainWindow::_slot_OpenFileLine(const QString &filePath, int line)
+{
+	if (open(filePath))
+		_editpane->editor()->goToLine(line);
 }
 
 void MainWindow::showEvent(QShowEvent *event)

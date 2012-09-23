@@ -18,11 +18,14 @@ public:
 	~SearchResultsDock();
 
 	void clear();
+signals:
+	void requestOpenFileLine(const QString &filePath, int line);
 public slots:
 	void startSearch(const QString &term);
 	void addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
 	void endSearch();
 protected:
+	bool eventFilter(QObject *obj, QEvent *event);
 	void _FinishFile();
 	QsciScintilla *_editor;
 	QString _lastFilePath;

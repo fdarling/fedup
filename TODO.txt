@@ -1,6 +1,6 @@
 - Add recent files menu
 - Fix coalescing of line deletions, especially across different documents
-- Finish "Find in Files"
+- Finish the Find dialog, particularly the "Mark" tab, the "Search results" dock, the transparency options, and saving settings
 - Lexer dropdown, Macro dropdown, and the rest of the Search drop down
 - Make more menus items aware of when they won't actually do anything and disable them appropriately, Move Line Up for example, and Find when there are no files open
 - Debug the Undo/Redo availablity tracking code when going from no documents open to 1 open
@@ -16,4 +16,4 @@
 - Save various settings, such as whitespace visibility and find dialog state
 - Finish tab context menu, implement document renaming/deleting
 - Figure out why the existing window isn't raising when opening files and triggering an existing window to open them
-- Finish "Simplify Whitespace"
+- Finish "Edit->Simplify Whitespace"

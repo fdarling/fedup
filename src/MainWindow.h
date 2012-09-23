@@ -31,7 +31,7 @@ signals:
 	void sig_FullscreenChanged(bool onTop);
 public slots:
 	void open();
-	void open(const QString &filePath);
+	bool open(const QString &filePath);
 	bool save();
 	bool saveAs();
 	bool saveAs(const QString &filePath);
@@ -44,6 +44,7 @@ protected slots:
 	void _slot_TabChanged(TabContext *context, TabContext *oldContext);
 	void _slot_SetAlwaysOnTop(bool onTop);
 	void _slot_SetFullscreen(bool fullscreen);
+	void _slot_OpenFileLine(const QString &filePath, int line);
 protected:
 	void _SetupActions();
 	void _SetupConnections();

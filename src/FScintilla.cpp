@@ -112,6 +112,11 @@ FScintilla::~FScintilla()
 {
 }
 
+void FScintilla::setFilePath(const QString &filePath)
+{
+	_filePath = filePath;
+}
+
 void FScintilla::setDocument(const QsciDocument &doc)
 {
 	const bool wasModified = isModified();

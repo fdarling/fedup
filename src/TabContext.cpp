@@ -30,6 +30,7 @@ void TabContext::save(FScintilla *editor)
 
 void TabContext::restore(FScintilla *editor) const
 {
+	editor->setFilePath(filePath);
 	editor->setDocument(document);
 	editor->SendScintilla(QsciScintilla::SCI_SETSEL, selectionStartPos, selectionEndPos);
 	editor->verticalScrollBar()->setValue(verticalScrollBarPosition);
