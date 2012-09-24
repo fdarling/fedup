@@ -18,5 +18,8 @@
 		<file>icons/stopRecord.bmp</file>
 		<file>icons/undo.bmp</file>
 		<file>icons/unsaved.ico</file>
+		<file>icons/win.png</file>
+		<file>icons/tux.png</file>
+		<file>icons/mac.png</file>
 	</qresource>
 </RCC>

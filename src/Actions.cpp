@@ -37,9 +37,9 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	editMoveLineUp         = GenAction("Move Up Current Line",   "Ctrl+Shift+Up",   "");
 	editMoveLineDown       = GenAction("Move Down Current Line", "Ctrl+Shift+Down", "");
 	editToggleBlockComment = GenAction("Toggle Block Comment",   "Ctrl+Q",          "");
-	editEolWindows         = GenAction("Windows Format",               "",          "");
-	editEolUnix            = GenAction("UNIX Format",                  "",          "");
-	editEolMac             = GenAction("Mac Format",                   "",          "");
+	editEolWindows         = GenAction("Windows Format",               "",          "win.png");
+	editEolUnix            = GenAction("UNIX Format",                  "",          "tux.png");
+	editEolMac             = GenAction("Mac Format",                   "",          "mac.png");
 	editTrimTrailingSpaces = GenAction("Trim trailing spaces",   "",                "");
 	editSimplifyWhitespace = GenAction("Simplify Whitespace",    "",                "");
 	editEolWindows->setCheckable(true);
