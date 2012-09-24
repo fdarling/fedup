@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QString>
 
+#include "FScintilla.h"
 class QsciMacro;
 
 namespace fedup {
@@ -45,6 +46,8 @@ protected slots:
 	void _slot_SetAlwaysOnTop(bool onTop);
 	void _slot_SetFullscreen(bool fullscreen);
 	void _slot_OpenFileLine(const QString &filePath, int line);
+	void _slot_EolModeChanged(FScintilla::EolMode mode);
+	void _slot_EditEolModeTriggered(QAction *action);
 protected:
 	void _SetupActions();
 	void _SetupConnections();

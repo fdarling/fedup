@@ -33,6 +33,15 @@ static const int FSCINTILLA_SMARTHIGHLIGHTING_BACKGROUND_COLOR = (0) | (255 << 8
 
 static const int MAXLINEHIGHLIGHT = 400; // hardcoded max lines to rehilight at once for performance considerations ???
 
+static const FScintilla::EolMode FSCINTILLA_DEFAULT_EOLMODE =
+#if   defined(Q_OS_WIN)
+FScintilla::EolWindows;
+#elif defined(Q_OS_MAC)
+FScintilla::EolMac;
+#else
+FScintilla::EolUnix;
+#endif
+
 static bool IsWord(const QString &word)
 {
 	for (int i = 0; i < word.size(); i++)
@@ -120,6 +129,7 @@ void FScintilla::setFilePath(const QString &filePath)
 void FScintilla::setDocument(const QsciDocument &doc)
 {
 	const bool wasModified = isModified();
+	const EolMode oldEolMode = eolMode();
 	QsciScintilla::setDocument(doc);
 
 	// TODO figure out why the font keeps getting reset!
@@ -133,10 +143,52 @@ void FScintilla::setDocument(const QsciDocument &doc)
 	// SendScintilla((unsigned int)SCI_STYLESETBOLD, (long unsigned int)STYLE_BRACELIGHT, (long int)true);
 
 	const bool nowModified = isModified();
+	const EolMode newEolMode = eolMode();
 	if (wasModified != nowModified)
 		emit modificationChanged(nowModified); // HACK workaround for QsciScintilla not doing this for us >.<
+	if (newEolMode != oldEolMode)
+		emit eolModeChanged(newEolMode);
 	_RefreshCurrentLineMarker(_currentLine);
 	_slot_TextChanged();
+}
+
+bool FScintilla::read(QIODevice *io)
+{
+	const EolMode oldEolMode = eolMode();
+	const bool result = QsciScintilla::read(io);
+	const EolMode newEolMode = _DetermineEolMode();
+	if (newEolMode != oldEolMode)
+	{
+		// NOTE: we bypass calling SCI_CONVERTEOLS by using the base implementation
+		QsciScintilla::setEolMode(newEolMode);
+		emit eolModeChanged(newEolMode);
+	}
+	return result;
+}
+
+FScintilla::EolMode FScintilla::_DetermineEolMode() const
+{
+	for (int lineNumber = 0; lineNumber < lines(); lineNumber++)
+	{
+		const QString lineText = text(lineNumber);
+		if (lineText.endsWith("\r\n"))
+			return EolWindows;
+		else if (lineText.endsWith('\n'))
+			return EolUnix;
+		else if (lineText.endsWith('\r'))
+			return EolMac;
+	}
+	return FSCINTILLA_DEFAULT_EOLMODE;
+}
+
+void FScintilla::setEolMode(EolMode mode)
+{
+	const EolMode oldEolMode = eolMode();
+	QsciScintilla::setEolMode(mode);
+	SendScintilla(SCI_CONVERTEOLS, mode);
+	const EolMode newEolMode = eolMode();
+	if (newEolMode != oldEolMode)
+		emit eolModeChanged(newEolMode);
 }
 
 void FScintilla::goToLine(int line)

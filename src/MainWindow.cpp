@@ -125,6 +125,8 @@ void MainWindow::_SetupActions()
 	connect(_actions->editToggleBlockComment, SIGNAL(triggered()), e, SLOT(toggleCommented()));
 	connect(_actions->editTrimTrailingSpaces, SIGNAL(triggered()), e, SLOT(trimTrailingWhitespace()));
 	connect(_actions->editSimplifyWhitespace, SIGNAL(triggered()), e, SLOT(simplifyWhitespace()));
+	_slot_EolModeChanged(e->eolMode()); // set the initial value
+	connect(_actions->editEolGroup, SIGNAL(triggered(QAction*)), this, SLOT(_slot_EditEolModeTriggered(QAction*)));
 
 	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
 	connect(_actions->searchFindInFiles, SIGNAL(triggered()), _findDialog, SLOT(showFindInFiles()));
@@ -176,6 +178,7 @@ void MainWindow::_SetupConnections()
 	connect(e, SIGNAL(positionChanged(int)), _gotoDialog, SLOT(slot_SetCurrentOffset(int)));
 	connect(e, SIGNAL(lineCountChanged(int)), _gotoDialog, SLOT(slot_SetMaxLine(int)));
 	connect(e, SIGNAL(lengthChanged(int)), _gotoDialog, SLOT(slot_SetMaxOffset(int))); // TODO use slot_SetLength instead?
+	connect(e, SIGNAL(eolModeChanged(FScintilla::EolMode)), this, SLOT(_slot_EolModeChanged(FScintilla::EolMode)));
 	connect(_gotoDialog, SIGNAL(goToLine(int)), e, SLOT(goToLine(int)));
 	connect(_gotoDialog, SIGNAL(goToOffset(int)), e, SLOT(goToOffset(int)));
 
@@ -441,6 +444,24 @@ void MainWindow::_slot_OpenFileLine(const QString &filePath, int line)
 {
 	if (open(filePath))
 		_editpane->editor()->goToLine(line);
+}
+
+void MainWindow::_slot_EolModeChanged(FScintilla::EolMode mode)
+{
+	const QList<QAction*> l = _actions->editEolGroup->actions();
+	for (QList<QAction*>::const_iterator it = l.begin(); it != l.end(); ++it)
+	{
+		if (mode == static_cast<FScintilla::EolMode>((*it)->data().toInt()))
+		{
+			(*it)->setChecked(true);
+			break;
+		}
+	}
+}
+
+void MainWindow::_slot_EditEolModeTriggered(QAction *action)
+{
+	_editpane->editor()->setEolMode(static_cast<FScintilla::EolMode>(action->data().toInt()));
 }
 
 void MainWindow::showEvent(QShowEvent *event)

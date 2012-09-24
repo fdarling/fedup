@@ -14,6 +14,7 @@ public:
 
 	void setFilePath(const QString &filePath);
 	void setDocument(const QsciDocument &doc);
+	bool read(QIODevice *io);
 
 	QString filePath() const {return _filePath;}
 signals:
@@ -24,7 +25,9 @@ signals:
 	void lineChanged(int line);
 	void undoAvailable(bool available);
 	void redoAvailable(bool available);
+	void eolModeChanged(FScintilla::EolMode mode);
 public slots:
+	void setEolMode(EolMode mode);
 	void goToLine(int line);
 	void goToOffset(int offset);
 	void duplicateLines();
@@ -50,6 +53,7 @@ protected:
 	void _RefreshSmartHighlighting();
 	void _ClearSmartHighlighting();
 	void _SmartHighlight(int firstDocumentLine, int lastDocumentLine);
+	FScintilla::EolMode _DetermineEolMode() const;
 
 	int _selectionLength;
 	int _lineCount;

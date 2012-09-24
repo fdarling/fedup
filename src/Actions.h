@@ -40,8 +40,12 @@ public:
 	QAction *editMoveLineUp;
 	QAction *editMoveLineDown;
 	QAction *editToggleBlockComment;
+	QAction *editEolWindows;
+	QAction *editEolUnix;
+	QAction *editEolMac;
 	QAction *editTrimTrailingSpaces;
 	QAction *editSimplifyWhitespace;
+	QActionGroup *editEolGroup;
 
 	QAction *searchFind;
 	QAction *searchFindInFiles;

@@ -45,6 +45,10 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		editMenu->addSeparator();
 		editMenu->addAction(actions->editToggleBlockComment);
 		editMenu->addSeparator();
+		editMenu->addAction(actions->editEolWindows);
+		editMenu->addAction(actions->editEolUnix);
+		editMenu->addAction(actions->editEolMac);
+		editMenu->addSeparator();
 		editMenu->addAction(actions->editTrimTrailingSpaces);
 		editMenu->addAction(actions->editSimplifyWhitespace);
 	}

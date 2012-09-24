@@ -3,6 +3,8 @@
 
 #include <QAction>
 
+#include "FScintilla.h"
+
 namespace fedup {
 
 QAction * Actions::GenAction(const QString &name, const QString &seq, const QString &iconFilename)
@@ -35,8 +37,22 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	editMoveLineUp         = GenAction("Move Up Current Line",   "Ctrl+Shift+Up",   "");
 	editMoveLineDown       = GenAction("Move Down Current Line", "Ctrl+Shift+Down", "");
 	editToggleBlockComment = GenAction("Toggle Block Comment",   "Ctrl+Q",          "");
+	editEolWindows         = GenAction("Windows Format",               "",          "");
+	editEolUnix            = GenAction("UNIX Format",                  "",          "");
+	editEolMac             = GenAction("Mac Format",                   "",          "");
 	editTrimTrailingSpaces = GenAction("Trim trailing spaces",   "",                "");
 	editSimplifyWhitespace = GenAction("Simplify Whitespace",    "",                "");
+	editEolWindows->setCheckable(true);
+	editEolUnix->setCheckable(true);
+	editEolMac->setCheckable(true);
+	editEolWindows->setData(FScintilla::EolWindows);
+	editEolUnix->setData(FScintilla::EolUnix);
+	editEolMac->setData(FScintilla::EolMac);
+	editEolGroup = new QActionGroup(this);
+	editEolGroup->addAction(editEolWindows);
+	editEolGroup->addAction(editEolUnix);
+	editEolGroup->addAction(editEolMac);
+	editEolGroup->setExclusive(true);
 
 	searchFind = GenAction("&Find...", "Ctrl+F", "find.bmp");
 	searchFindInFiles = GenAction("Find in Files...", "Ctrl+Shift+F", "");
