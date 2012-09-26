@@ -53,6 +53,7 @@ public:
 	QAction *searchFindPrev;
 	QAction *searchReplace;
 	QAction *searchGoTo;
+	QAction *searchGoToMatchingBrace;
 	QAction *searchBookmarkToggle;
 	QAction *searchBookmarkNext;
 	QAction *searchBookmarkPrev;

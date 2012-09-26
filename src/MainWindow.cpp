@@ -134,6 +134,7 @@ void MainWindow::_SetupActions()
 	connect(_actions->searchFindPrev, SIGNAL(triggered()), _findDialog, SLOT(findPrev()));
 	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
 	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
+	connect(_actions->searchGoToMatchingBrace, SIGNAL(triggered()), e, SLOT(moveToMatchingBrace())); // TODO disable this when there isn't a matching brace to go to, I need to have FScintilla emit a signal...
 	connect(_actions->searchBookmarkToggle, SIGNAL(triggered()), e, SLOT(toggleBookmark()));
 	connect(_actions->searchBookmarkNext, SIGNAL(triggered()), e, SLOT(findNextBookmark()));
 	connect(_actions->searchBookmarkPrev, SIGNAL(triggered()), e, SLOT(findPrevBookmark()));

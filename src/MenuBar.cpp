@@ -69,7 +69,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		// searchMenu->addAction("Next Search Result", tabs, SLOT(slot_FindPrev()), QKeySequence("F4"));
 		// searchMenu->addAction("Previous Search Result", tabs, SLOT(slot_FindPrev()), QKeySequence("Shift+F4"));
 		searchMenu->addAction(actions->searchGoTo);
-		//searchMenu->addAction("Go to Matching Brace", this, SLOT(slot_SearchGoTo()), QKeySequence("Ctrl+B"));
+		searchMenu->addAction(actions->searchGoToMatchingBrace);
 		searchMenu->addSeparator();
 		searchMenu->addAction(actions->searchBookmarkToggle);
 		searchMenu->addAction(actions->searchBookmarkNext);
