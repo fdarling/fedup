@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
+#include <QScrollBar>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QUrl>
@@ -53,13 +54,25 @@ void EditPane::loadSession(QSettings &settings)
 	{
 		settings.setArrayIndex(i);
 		const QString filePath = settings.value("filepath").toString();
-		open(filePath);
+		const OpenResult openResult = open(filePath);
+		if (openResult == OpenSucceeded || openResult == OpenAlreadyOpen)
+		{
+			_editor->verticalScrollBar()->setValue(settings.value("vertical_scrollbar_pos", 0).toInt());
+			_editor->horizontalScrollBar()->setValue(settings.value("horizontal_scrollbar_pos", 0).toInt());
+			TabContext * const context = _tabs->tabContext(_tabs->currentIndex());
+			context->save(_editor); // HACK to make it store the new scroll bar positions
+		}
 	}
 	settings.endArray();
 }
 
 void EditPane::saveSession(QSettings &settings) const
 {
+	if (_tabs->currentIndex() != -1)
+	{
+		TabContext * const context = _tabs->tabContext(_tabs->currentIndex());
+		context->save(_editor); // HACK to make it store the new scroll bar positions
+	}
 	settings.beginWriteArray("open");
 	int j = 0;
 	for (int i = 0; i < _tabs->count(); i++)
@@ -70,6 +83,8 @@ void EditPane::saveSession(QSettings &settings) const
 		const QString absoluteFilePath = QFileInfo(context->filePath).absoluteFilePath();
 		settings.setArrayIndex(j);
 		settings.setValue("filepath", absoluteFilePath);
+		settings.setValue("vertical_scrollbar_pos", context->verticalScrollBarPosition);
+		settings.setValue("horizontal_scrollbar_pos", context->horizontalScrollBarPosition);
 		j++;
 	}
 	settings.endArray();
