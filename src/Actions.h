@@ -53,6 +53,10 @@ public:
 	QAction *searchFindPrev;
 	QAction *searchReplace;
 	QAction *searchGoTo;
+	QAction *searchBookmarkToggle;
+	QAction *searchBookmarkNext;
+	QAction *searchBookmarkPrev;
+	QAction *searchBookmarkClearAll;
 
 	QAction *viewAlwaysOnTop;
 	QAction *viewFullscreen;

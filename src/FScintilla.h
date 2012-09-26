@@ -39,11 +39,17 @@ public slots:
 	void trimTrailingWhitespace();
 	void simplifyWhitespace();
 	void setWhitespaceVisible(bool vis);
+	void toggleBookmark();
+	void toggleBookmark(int line);
+	void findPrevBookmark();
+	void findNextBookmark();
+	void clearBookmarks();
 protected slots:
 	void _slot_Scrolled();
 	void _slot_TextChanged();
 	void _slot_CursorPositionChanged(int line, int index);
 	void _slot_SelectionChanged();
+	void _slot_MarginClicked(int margin, int line, Qt::KeyboardModifiers state);
 protected:
 	void wheelEvent(QWheelEvent *event);
 

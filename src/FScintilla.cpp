@@ -28,6 +28,7 @@ struct TextToFind {
 namespace fedup {
 
 static const int FSCINTILLA_ACTIVELINE_MARKER_ID = 15;
+static const int FSCINTILLA_BOOKMARK_MARKER_ID = 16;
 static const int FSCINTILLA_ACTIVELINE_MARKER_BACKGROUND_COLOR = (232) | (232 << 8) | (255 << 16);
 static const int FSCINTILLA_SMARTHIGHLIGHTING_BACKGROUND_COLOR = (0) | (255 << 8) | (0 << 16);
 
@@ -55,9 +56,16 @@ static bool IsWord(const QString &word)
 
 FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLength(0), _lineCount(0), _length(0), _currentLine(0), _currentOffset(0), _undoAvailable(false), _redoAvailable(false), _lastDeletedLine(-1)
 {
-	setMarginLineNumbers(1, true);
-	setMarginWidth(1, 50);
+	setMarginLineNumbers(0, true);
+	setMarginWidth(0, 50);
 	setMarginsForegroundColor(Qt::darkGray);
+
+	setMarginType(1, SymbolMargin);
+	// setMarginType(1, SymbolMarginDefaultBackgroundColor);
+	setMarginWidth(1, 16);
+	setMarginMarkerMask(1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	setMarginSensitivity(1, true);
+	markerDefine(Circle, FSCINTILLA_BOOKMARK_MARKER_ID);
 
 	setFolding(BoxedTreeFoldStyle, 2);
 	setAutoIndent(true);
@@ -112,6 +120,7 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 	connect(this, SIGNAL(textChanged()), this, SLOT(_slot_TextChanged()));
 	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(_slot_CursorPositionChanged(int, int)));
 	connect(this, SIGNAL(selectionChanged()), this, SLOT(_slot_SelectionChanged()));
+	connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(_slot_MarginClicked(int, int, Qt::KeyboardModifiers)));
 
 	// TODO put this kind of initialization stuff into a private member function
 	SendScintilla(SCI_MARKERADD, _currentLine, FSCINTILLA_ACTIVELINE_MARKER_ID);
@@ -457,6 +466,44 @@ void FScintilla::setWhitespaceVisible(bool vis)
 	setWhitespaceVisibility(vis ? WsVisible : WsInvisible);
 }
 
+void FScintilla::toggleBookmark()
+{
+	int line = -1, index = -1;
+	getCursorPosition(&line, &index);
+	toggleBookmark(line);
+}
+
+void FScintilla::toggleBookmark(int line)
+{
+	if (markersAtLine(line) & (1 << FSCINTILLA_BOOKMARK_MARKER_ID))
+		markerDelete(line, FSCINTILLA_BOOKMARK_MARKER_ID);
+	else
+		markerAdd(line, FSCINTILLA_BOOKMARK_MARKER_ID);
+}
+
+void FScintilla::findPrevBookmark()
+{
+	int line = -1, index = -1;
+	getCursorPosition(&line, &index);
+	const int markedLine = markerFindPrevious(line-1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	if (markedLine != -1)
+		goToLine(markedLine);
+}
+
+void FScintilla::findNextBookmark()
+{
+	int line = -1, index = -1;
+	getCursorPosition(&line, &index);
+	const int markedLine = markerFindNext(line+1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	if (markedLine != -1)
+		goToLine(markedLine);
+}
+
+void FScintilla::clearBookmarks()
+{
+	markerDeleteAll(FSCINTILLA_BOOKMARK_MARKER_ID);
+}
+
 void FScintilla::wheelEvent(QWheelEvent *event)
 {
 	if (event->modifiers() == Qt::ControlModifier && event->orientation() == Qt::Vertical)
@@ -637,6 +684,13 @@ void FScintilla::_slot_SelectionChanged()
 	_smartHighlightedRange.firstLine = firstDocumentLine;
 	_smartHighlightedRange.lastLine = lastDocumentLine;
 	_SmartHighlight(firstDocumentLine, lastDocumentLine);
+}
+
+void FScintilla::_slot_MarginClicked(int margin, int line, Qt::KeyboardModifiers state)
+{
+	Q_UNUSED(margin);
+	Q_UNUSED(state);
+	toggleBookmark(line);
 }
 
 } // namespace fedup

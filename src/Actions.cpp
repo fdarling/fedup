@@ -60,6 +60,10 @@ Actions::Actions(QObject *parent) : QObject(parent)
 	searchFindPrev = GenAction("Find &Previous...", "Shift+F3", "");
 	searchReplace = GenAction("&Replace...", "Ctrl+R", "findReplace.bmp");
 	searchGoTo = GenAction("&Go to...", "Ctrl+G", "");
+	searchBookmarkToggle = GenAction("Toggle Bookmark", "Ctrl+F2", "");
+	searchBookmarkNext = GenAction("Next Bookmark", "F2", "");
+	searchBookmarkPrev = GenAction("Prev Bookmark", "Shift+F2", "");
+	searchBookmarkClearAll = GenAction("Clear All Bookmarks", "", "");
 
 	viewAlwaysOnTop = GenAction("Always on Top", "", "");
 	viewFullscreen = GenAction("Toggle Fullscreen", "F11", "");
