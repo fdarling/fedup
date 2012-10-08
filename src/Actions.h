@@ -21,6 +21,7 @@ public:
 public:
 	QAction *fileNew;
 	QAction *fileOpen;
+	QAction *fileReload;
 	QAction *fileSave;
 	QAction *fileSaveAs;
 	QAction *fileClose;

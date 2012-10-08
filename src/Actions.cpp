@@ -18,6 +18,7 @@ Actions::Actions(QObject *parent) : QObject(parent)
 {
 	fileNew      = GenAction("&New",        "Ctrl+N",     "newFile.bmp");
 	fileOpen     = GenAction("&Open",       "Ctrl+O",     "openFile.bmp");
+	fileReload   = GenAction("Re&load from Disk", "", "");
 	fileSave     = GenAction("&Save",       "Ctrl+S",     "saved.ico");
 	fileSaveAs   = GenAction("Save &As...", "Ctrl+Alt+S", "");
 	fileClose    = GenAction("&Close",      "Ctrl+W",     "closeFile.bmp");

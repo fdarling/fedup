@@ -35,6 +35,7 @@ public slots:
 	void openNew();
 	void closeTab();
 	void closeAll();
+	void reload(); // TODO move elsewhere?
 protected slots:
 	void _slot_TabCloseRequested(int index);
 	void _slot_TabCloseAllButRequested(int index);

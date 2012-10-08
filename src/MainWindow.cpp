@@ -92,6 +92,7 @@ void MainWindow::_SetupActions()
 
 	connect(_actions->fileNew, SIGNAL(triggered()), _editpane, SLOT(openNew()));
 	connect(_actions->fileOpen, SIGNAL(triggered()), this, SLOT(open()));
+	connect(_actions->fileReload, SIGNAL(triggered()), _editpane, SLOT(reload()));
 	connect(_actions->fileSave, SIGNAL(triggered()), this, SLOT(save()));
 	connect(_actions->fileSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
 	connect(_actions->fileClose, SIGNAL(triggered()), _editpane, SLOT(closeTab()));

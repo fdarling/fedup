@@ -9,8 +9,8 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 	{
 		QMenu * const fileMenu = this->addMenu("&File");
 		fileMenu->addAction(actions->fileNew);
-		// TODO "Re&load from Disk"
 		fileMenu->addAction(actions->fileOpen);
+		fileMenu->addAction(actions->fileReload);
 		fileMenu->addAction(actions->fileSave);
 		fileMenu->addAction(actions->fileSaveAs);
 		// TODO "Save a Copy As..."

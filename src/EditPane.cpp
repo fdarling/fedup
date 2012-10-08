@@ -188,6 +188,25 @@ void EditPane::closeAll()
 		_tabs->removeTab(i);
 }
 
+void EditPane::reload()
+{
+	if (_tabs->count() > 0)
+	{
+		TabContext * const context = _tabs->tabContext(_tabs->currentIndex());
+
+		QFile file(context->filePath);
+		if (!file.open(QIODevice::ReadOnly))
+			return; // TODO informative error message
+
+		// TODO possibly preserve the original contents?
+		const bool succeeded = _editor->read(&file);
+		if (!succeeded)
+			return;
+		_editor->setModified(false); // TODO figure out why this makes it not modified, but then makes the undo option available unto a context switch :-/
+		_editor->setDocument(_editor->document()); // HACK to correct the above glitch
+	}
+}
+
 void EditPane::_slot_TabCloseRequested(int index)
 {
 	_TryClosingTab(index);
