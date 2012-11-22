@@ -27,6 +27,7 @@ public:
 	MainWindow(QWidget *parent = NULL);
 	~MainWindow();
 	bool isAlwaysOnTop() const;
+
 signals:
 	void sig_AlwaysOnTopChanged(bool onTop);
 	void sig_FullscreenChanged(bool onTop);
@@ -48,9 +49,11 @@ protected slots:
 	void _slot_OpenFileLine(const QString &filePath, int line);
 	void _slot_EolModeChanged(FScintilla::EolMode mode);
 	void _slot_EditEolModeTriggered(QAction *action);
+	void _slot_SaveSettings();
 protected:
 	void _SetupActions();
 	void _SetupConnections();
+	void _SaveSettings(QSettings &settings) const;
 
 	void showEvent(QShowEvent *event);
 	void closeEvent(QCloseEvent *event);

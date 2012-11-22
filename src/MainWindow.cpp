@@ -66,6 +66,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// reopen the previously open files
 	_editpane->loadSession(_settings);
+
+	{
+		QTimer * const timer = new QTimer(this);
+		connect(timer, SIGNAL(timeout()), this, SLOT(_slot_SaveSettings()));
+		timer->start(30000); // TODO make this configurable, currently auto-save the program state every 30 seconds
+	}
 }
 
 MainWindow::~MainWindow()
@@ -470,6 +476,11 @@ void MainWindow::_slot_EditEolModeTriggered(QAction *action)
 	_editpane->editor()->setEolMode(static_cast<FScintilla::EolMode>(action->data().toInt()));
 }
 
+void MainWindow::_slot_SaveSettings()
+{
+	_SaveSettings(_settings);
+}
+
 void MainWindow::showEvent(QShowEvent *event)
 {
 	_actions->viewFullscreen->setChecked(isFullScreen());
@@ -480,16 +491,21 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	ExitSaveDialog exitSaveDialog(this);
 	if (exitSaveDialog.shouldClose(this, _editpane))
 	{
-		_settings.setValue("window_always_on_top", isAlwaysOnTop());
-		_settings.setValue("window_state", saveState());
-		_settings.setValue("window_geometry", saveGeometry());
-		_settings.setValue("working_directory", _currentDirectory);
-		_editpane->saveSession(_settings);
-		_menubar->recentFilesList()->saveSettings(_settings);
+		_slot_SaveSettings();
 		event->accept();
 	}
 	else
 		event->ignore();
+}
+
+void MainWindow::_SaveSettings(QSettings &settings) const
+{
+	settings.setValue("window_always_on_top", isAlwaysOnTop());
+	settings.setValue("window_state", saveState());
+	settings.setValue("window_geometry", saveGeometry());
+	settings.setValue("working_directory", _currentDirectory);
+	_editpane->saveSession(settings);
+	_menubar->recentFilesList()->saveSettings(settings);
 }
 
 } // namespace fedup
