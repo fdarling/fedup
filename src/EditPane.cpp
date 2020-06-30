@@ -167,6 +167,7 @@ SaveResult EditPane::saveAs(const QString &filePath)
 	}
 	if (!_editor->write(&file))
 		return SaveWriteError;
+	const QString oldFilePath = context->filePath;
 	if (absoluteFilePath != context->filePath)
 	{
 		// TODO emit a signal?
@@ -178,7 +179,11 @@ SaveResult EditPane::saveAs(const QString &filePath)
 	_editor->setModified(false);
 	const QString filename = info.fileName();
 	if (!absoluteFilePath.isEmpty())
-		_editor->setLexer(LexerPicker::chooseLexer(filename));
+	{
+		QFileInfo oldInfo(oldFilePath);
+		if (oldInfo.suffix().compare(info.suffix(), Qt::CaseInsensitive) != 0)
+			_editor->setLexer(LexerPicker::chooseLexer(filename));
+	}
 	return SaveSucceeded;
 }
 
