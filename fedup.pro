@@ -1,9 +1,16 @@
 TEMPLATE = app
 TARGET = fedup
-QT += network
-CONFIG += console release
+QT += network widgets
+# CONFIG += release
+# CONFIG += console release
+# CONFIG += console debug
 INCLUDEPATH += src/qtsingleapplication
-LIBS += -lqscintilla2
+greaterThan(QT_MAJOR_VERSION, 4) {
+	LIBS += -lqscintilla2_qt5
+} else {
+	LIBS += -lqscintilla2
+}
+
 RC_FILE = fedup.rc
 RESOURCES = fedup.qrc
 HEADERS = \

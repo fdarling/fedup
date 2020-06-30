@@ -16,6 +16,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QUrl>
+#include <QMimeData>
 // #include <QDebug>
 
 #include <Qsci/qscilexer.h>

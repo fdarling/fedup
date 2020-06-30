@@ -665,13 +665,13 @@ void FScintilla::_slot_SelectionChanged()
 		return;
 	if (wordStr == _smartHighlightedRange.word)
 		return;
-	_smartHighlightedRange.word = wordStr.toAscii();
+	_smartHighlightedRange.word = wordStr.toLatin1();
 
 	// clear the currently smart-highlighted words
 	_ClearSmartHighlighting();
 
 	// only continue if we have an actual word to search for
-	QByteArray word = wordStr.toAscii();
+	QByteArray word = wordStr.toLatin1();
 	if (wordStr.size() == 0 || !IsWord(wordStr))
 		return;
 

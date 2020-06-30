@@ -749,7 +749,7 @@ static QString ConvertFromExtended(const QString &query)
 		if (current == '\\' && i != query.size())
 		{
 			current = query.at(i++);
-			switch (current.toAscii())
+			switch (current.toLatin1())
 			{
 				case 'r': result.append('\r'); break;
 				case 'n': result.append('\n'); break;
