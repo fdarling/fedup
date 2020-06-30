@@ -66,6 +66,24 @@ public:
 	QAction *viewSymbolWhitespace;
 	QAction *viewSymbolNewlines;
 	QAction *viewIndentationGuide;
+	QAction *viewFoldAll;
+	QAction *viewUnfoldAll;
+	QAction *viewCollapse1;
+	QAction *viewCollapse2;
+	QAction *viewCollapse3;
+	QAction *viewCollapse4;
+	QAction *viewCollapse5;
+	QAction *viewCollapse6;
+	QAction *viewCollapse7;
+	QAction *viewCollapse8;
+	QAction *viewUncollapse1;
+	QAction *viewUncollapse2;
+	QAction *viewUncollapse3;
+	QAction *viewUncollapse4;
+	QAction *viewUncollapse5;
+	QAction *viewUncollapse6;
+	QAction *viewUncollapse7;
+	QAction *viewUncollapse8;
 
 	QAction *macroStartRecording;
 	QAction *macroStopRecording;

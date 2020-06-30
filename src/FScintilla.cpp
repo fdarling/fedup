@@ -504,6 +504,43 @@ void FScintilla::clearBookmarks()
 	markerDeleteAll(FSCINTILLA_BOOKMARK_MARKER_ID);
 }
 
+void FScintilla::foldAll()
+{
+	QsciScintilla::clearFolds(); // HACK TODO optimize this so it just folds everything, this is a hack to use QsciScintilla's existing foldAll() method which actually toggles
+	QsciScintilla::foldAll(true);
+}
+
+void FScintilla::unfoldAll()
+{
+	QsciScintilla::clearFolds();
+}
+
+// NOTE: this method is shamelessly copied from Notepad++'s source code...
+void FScintilla::collapse(int level2Collapse, bool mode)
+{
+	SendScintilla(SCI_COLOURISE, 0, -1); // TODO is this the right way of doing this?
+
+	int maxLine = SendScintilla(SCI_GETLINECOUNT);
+
+	for (int line = 0; line < maxLine; ++line) 
+	{
+		int level = SendScintilla(SCI_GETFOLDLEVEL, line);
+		if (level & SC_FOLDLEVELHEADERFLAG) 
+		{
+			level -= SC_FOLDLEVELBASE;
+			if (level2Collapse == (level & SC_FOLDLEVELNUMBERMASK))
+			{
+				if ((SendScintilla(SCI_GETFOLDEXPANDED, line) != 0) != mode)
+				{
+					foldLine(line);
+				}
+			}
+		}
+	}
+
+	//runMarkers(true, 0, true, false);
+}
+
 void FScintilla::wheelEvent(QWheelEvent *event)
 {
 	if (event->modifiers() == Qt::ControlModifier && event->orientation() == Qt::Vertical)

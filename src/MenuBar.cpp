@@ -85,6 +85,31 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		viewMenu->addAction(actions->viewSymbolNewlines);
 		// viewMenu->addAction("Post-It", this, SLOT(setPostit(bool)), QKeySequence("F12"))->setCheckable(true);
 		viewMenu->addSeparator();
+		viewMenu->addAction(actions->viewFoldAll);
+		viewMenu->addAction(actions->viewUnfoldAll);
+		{
+			QMenu * const collapseMenu = viewMenu->addMenu("Collapse Level");
+			collapseMenu->addAction(actions->viewCollapse1);
+			collapseMenu->addAction(actions->viewCollapse2);
+			collapseMenu->addAction(actions->viewCollapse3);
+			collapseMenu->addAction(actions->viewCollapse4);
+			collapseMenu->addAction(actions->viewCollapse5);
+			collapseMenu->addAction(actions->viewCollapse6);
+			collapseMenu->addAction(actions->viewCollapse7);
+			collapseMenu->addAction(actions->viewCollapse8);
+		}
+		{
+			QMenu * const uncollapseMenu = viewMenu->addMenu("Uncollapse Level");
+			uncollapseMenu->addAction(actions->viewUncollapse1);
+			uncollapseMenu->addAction(actions->viewUncollapse2);
+			uncollapseMenu->addAction(actions->viewUncollapse3);
+			uncollapseMenu->addAction(actions->viewUncollapse4);
+			uncollapseMenu->addAction(actions->viewUncollapse5);
+			uncollapseMenu->addAction(actions->viewUncollapse6);
+			uncollapseMenu->addAction(actions->viewUncollapse7);
+			uncollapseMenu->addAction(actions->viewUncollapse8);
+		}
+		viewMenu->addSeparator();
 		viewMenu->addAction(actions->viewSearchResults);
 	}
 	{

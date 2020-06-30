@@ -164,6 +164,24 @@ void MainWindow::_SetupActions()
 	connect(_actions->viewSymbolWhitespace, SIGNAL(toggled(bool)), e, SLOT(setWhitespaceVisible(bool)));
 	connect(_actions->viewIndentationGuide, SIGNAL(toggled(bool)), e, SLOT(setIndentationGuides(bool)));
 	connect(_actions->viewSymbolNewlines, SIGNAL(toggled(bool)), e, SLOT(setEolVisibility(bool)));
+	connect(_actions->viewFoldAll, SIGNAL(triggered()), e, SLOT(foldAll()));
+	connect(_actions->viewUnfoldAll, SIGNAL(triggered()), e, SLOT(unfoldAll()));
+	connect(_actions->viewCollapse1, SIGNAL(triggered()), this, SLOT(_slot_Collapse0()));
+	connect(_actions->viewCollapse2, SIGNAL(triggered()), this, SLOT(_slot_Collapse1()));
+	connect(_actions->viewCollapse3, SIGNAL(triggered()), this, SLOT(_slot_Collapse2()));
+	connect(_actions->viewCollapse4, SIGNAL(triggered()), this, SLOT(_slot_Collapse3()));
+	connect(_actions->viewCollapse5, SIGNAL(triggered()), this, SLOT(_slot_Collapse4()));
+	connect(_actions->viewCollapse6, SIGNAL(triggered()), this, SLOT(_slot_Collapse5()));
+	connect(_actions->viewCollapse7, SIGNAL(triggered()), this, SLOT(_slot_Collapse6()));
+	connect(_actions->viewCollapse8, SIGNAL(triggered()), this, SLOT(_slot_Collapse7()));
+	connect(_actions->viewUncollapse1, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse0()));
+	connect(_actions->viewUncollapse2, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse1()));
+	connect(_actions->viewUncollapse3, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse2()));
+	connect(_actions->viewUncollapse4, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse3()));
+	connect(_actions->viewUncollapse5, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse4()));
+	connect(_actions->viewUncollapse6, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse5()));
+	connect(_actions->viewUncollapse7, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse6()));
+	connect(_actions->viewUncollapse8, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse7()));
 	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
 
 	// make the actions know when they are available
@@ -479,6 +497,86 @@ void MainWindow::_slot_EditEolModeTriggered(QAction *action)
 void MainWindow::_slot_SaveSettings()
 {
 	_SaveSettings(_settings);
+}
+
+void MainWindow::_slot_Collapse0()
+{
+	_editpane->editor()->collapse(0, false);
+}
+
+void MainWindow::_slot_Collapse1()
+{
+	_editpane->editor()->collapse(1, false);
+}
+
+void MainWindow::_slot_Collapse2()
+{
+	_editpane->editor()->collapse(2, false);
+}
+
+void MainWindow::_slot_Collapse3()
+{
+	_editpane->editor()->collapse(3, false);
+}
+
+void MainWindow::_slot_Collapse4()
+{
+	_editpane->editor()->collapse(4, false);
+}
+
+void MainWindow::_slot_Collapse5()
+{
+	_editpane->editor()->collapse(5, false);
+}
+
+void MainWindow::_slot_Collapse6()
+{
+	_editpane->editor()->collapse(6, false);
+}
+
+void MainWindow::_slot_Collapse7()
+{
+	_editpane->editor()->collapse(7, false);
+}
+
+void MainWindow::_slot_Uncollapse0()
+{
+	_editpane->editor()->collapse(0, true);
+}
+
+void MainWindow::_slot_Uncollapse1()
+{
+	_editpane->editor()->collapse(1, true);
+}
+
+void MainWindow::_slot_Uncollapse2()
+{
+	_editpane->editor()->collapse(2, true);
+}
+
+void MainWindow::_slot_Uncollapse3()
+{
+	_editpane->editor()->collapse(3, true);
+}
+
+void MainWindow::_slot_Uncollapse4()
+{
+	_editpane->editor()->collapse(4, true);
+}
+
+void MainWindow::_slot_Uncollapse5()
+{
+	_editpane->editor()->collapse(5, true);
+}
+
+void MainWindow::_slot_Uncollapse6()
+{
+	_editpane->editor()->collapse(6, true);
+}
+
+void MainWindow::_slot_Uncollapse7()
+{
+	_editpane->editor()->collapse(7, true);
 }
 
 void MainWindow::showEvent(QShowEvent *event)

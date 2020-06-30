@@ -44,6 +44,9 @@ public slots:
 	void findPrevBookmark();
 	void findNextBookmark();
 	void clearBookmarks();
+	void foldAll();
+	void unfoldAll();
+	void collapse(int level2Collapse, bool mode);
 protected slots:
 	void _slot_Scrolled();
 	void _slot_TextChanged();

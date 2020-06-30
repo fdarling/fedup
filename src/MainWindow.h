@@ -50,6 +50,22 @@ protected slots:
 	void _slot_EolModeChanged(FScintilla::EolMode mode);
 	void _slot_EditEolModeTriggered(QAction *action);
 	void _slot_SaveSettings();
+	void _slot_Collapse0();
+	void _slot_Collapse1();
+	void _slot_Collapse2();
+	void _slot_Collapse3();
+	void _slot_Collapse4();
+	void _slot_Collapse5();
+	void _slot_Collapse6();
+	void _slot_Collapse7();
+	void _slot_Uncollapse0();
+	void _slot_Uncollapse1();
+	void _slot_Uncollapse2();
+	void _slot_Uncollapse3();
+	void _slot_Uncollapse4();
+	void _slot_Uncollapse5();
+	void _slot_Uncollapse6();
+	void _slot_Uncollapse7();
 protected:
 	void _SetupActions();
 	void _SetupConnections();
