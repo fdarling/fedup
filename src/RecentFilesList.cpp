@@ -10,7 +10,7 @@ namespace fedup {
 
 static const int MAX_RECENT_FILES = 13;
 
-RecentFilesList::RecentFilesList(QMenu *ffileMenu, QSettings &settings) : _fileMenu(ffileMenu), _separator(_fileMenu->addSeparator()), _recentFilesGroup(NULL)
+RecentFilesList::RecentFilesList(QMenu *ffileMenu, QSettings &settings, QObject *parent) : QObject(parent), _fileMenu(ffileMenu), _separator(_fileMenu->addSeparator()), _recentFilesGroup(NULL)
 {
 	// _fileMenu->insertAction(_separator, new QAction(QString("Testing 1 2 3"), this));
 	_recentFilesGroup = new QActionGroup(this);

@@ -21,7 +21,7 @@ MenuBar::MenuBar(Actions *actions, QSettings &settings, QWidget *parent) : QMenu
 		// TODO "Close All but Active Document"
 		// TODO "Delete from Disk"
 		fileMenu->addSeparator();
-		_recentFilesList = new RecentFilesList(fileMenu, settings);
+		_recentFilesList = new RecentFilesList(fileMenu, settings, this);
 		fileMenu->addSeparator();
 		fileMenu->addAction(actions->fileExit);
 	}

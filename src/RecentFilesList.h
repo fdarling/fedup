@@ -19,7 +19,7 @@ class RecentFilesList : public QObject
 {
 	Q_OBJECT
 public:
-	RecentFilesList(QMenu *ffileMenu, QSettings &ssettings);
+	RecentFilesList(QMenu *ffileMenu, QSettings &ssettings, QObject *parent = NULL);
 	~RecentFilesList();
 
 	void saveSettings(QSettings &settings);

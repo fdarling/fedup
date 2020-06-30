@@ -46,6 +46,10 @@ EditPane::EditPane(QWidget *parent) : QWidget(parent), _tabs(NULL)
 
 EditPane::~EditPane()
 {
+	for (FilePathToContextMap::iterator it = _openFiles.begin(); it != _openFiles.end(); ++it)
+	{
+		delete it.value();
+	}
 }
 
 void EditPane::loadSession(QSettings &settings)
