@@ -1,0 +1,13 @@
+# user-specific project settings
+servoterm.pro.user
+
+# built objects and executables
+*.o
+fedup
+qrc_fedup.cpp
+
+# qmake/MOC generated files
+.qmake.stash
+Makefile
+moc_*.cpp
+moc_*.h
