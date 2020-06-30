@@ -25,7 +25,7 @@ namespace fedup {
 
 static QFont createFont(bool bold = false)
 {
-	QFont f("Courier New", 10);
+	QFont f("monospace", 9);
 	if (bold)
 		f.setWeight(QFont::Bold);
 	f.setStyleStrategy(QFont::NoAntialias);

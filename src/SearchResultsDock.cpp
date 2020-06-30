@@ -15,7 +15,7 @@ static const int FSCINTILLA_SEARCHRESULTS_FILE_FOREGROUND_COLOR = (  0) | (128 <
 SearchResultsDock::SearchResultsDock(QWidget *parent) : QDockWidget("Search results", parent), _editor(new QsciScintilla), _filePathLine(0), _currentLine(0), _fileCount(0), _hitCount(0), _totalHits(0)
 {
 	_editor->setReadOnly(true);
-	QFont f("Courier New", 10);
+	QFont f("monospace", 9);
 	_editor->setFont(f);
 	_editor->setTabWidth(4);
 	/*_editor->setIndicatorBackgroundColor(QColor(187, 187, 255), 1);

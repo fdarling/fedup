@@ -79,7 +79,7 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 	setTabWidth(4);
 
 	{
-		QFont f("Courier New", 10);
+		QFont f("monospace", 11);
 		// f.setStyleStrategy(QFont::PreferBitmap);
 		// f.setStyleStrategy(QFont::PreferDevice);
 		f.setStyleStrategy(QFont::NoAntialias);
@@ -142,7 +142,7 @@ void FScintilla::setDocument(const QsciDocument &doc)
 	QsciScintilla::setDocument(doc);
 
 	// TODO figure out why the font keeps getting reset!
-	QFont f("Courier New", 10);
+	QFont f("monospace", 9);
 	setFont(f);
 	setMarginsFont(f);
 	setTabWidth(4);
