@@ -30,6 +30,7 @@ public slots:
 	void setEolMode(EolMode mode);
 	void goToLine(int line);
 	void goToOffset(int offset);
+	void unindent();
 	void duplicateLines();
 	void deleteLine();
 	void undeleteLines();
@@ -54,6 +55,7 @@ protected slots:
 	void _slot_SelectionChanged();
 	void _slot_MarginClicked(int margin, int line, Qt::KeyboardModifiers state);
 protected:
+	bool event(QEvent *event);
 	void wheelEvent(QWheelEvent *event);
 
 	int _LineLength(int line);

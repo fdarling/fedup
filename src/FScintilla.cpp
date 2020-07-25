@@ -219,6 +219,51 @@ void FScintilla::goToOffset(int offset)
 	SendScintilla(SCI_GOTOPOS, offset);
 }
 
+void FScintilla::unindent()
+{
+	// find the range of lines to unindent
+	int selectionStartLine = -1;
+	int selectionStartColumn = -1;
+	int selectionEndLine = -1;
+	int selectionEndColumn = -1;
+	getSelection(&selectionStartLine, &selectionStartColumn, &selectionEndLine, &selectionEndColumn);
+	if (selectionEndColumn == 0)
+		selectionEndLine--;
+	if (selectionStartLine == -1 || selectionEndLine == -1)
+	{
+		int index = -1;
+		getCursorPosition(&selectionStartLine, &index);
+		selectionEndLine = selectionStartLine;
+	}
+
+	// determine the indentation increment
+	int indentIncrement = SendScintilla(SCI_GETINDENT);
+	if (indentIncrement == 0)
+		indentIncrement = SendScintilla(SCI_GETTABWIDTH);
+	if (indentIncrement == 0)
+		return;
+
+	beginUndoAction();
+
+	// unindent each line
+	for (int line = selectionStartLine; line <= selectionEndLine; line++)
+	{
+		const int lineStartColumn = SendScintilla(SCI_GETLINEINDENTATION, line);
+		const int remainder = 0;//lineStartColumn%indentIncrement;
+		const int newLineStartColumn = qMax(0, lineStartColumn - remainder - indentIncrement);
+		SendScintilla(SCI_SETLINEINDENTATION, line, newLineStartColumn);
+	}
+
+	// for unindenting without a selection, position the cursor to the (new) beginning of the line
+	if (selectionStartColumn == -1 || selectionEndColumn == -1)
+	{
+		const int positionAfterIndentation = SendScintilla(SCI_GETLINEINDENTPOSITION, selectionStartLine);
+		SendScintilla(SCI_GOTOPOS, positionAfterIndentation);
+	}
+
+	endUndoAction();
+}
+
 void FScintilla::duplicateLines()
 {
 	int selectionStartPos = SendScintilla(SCI_GETSELECTIONSTART);
@@ -534,10 +579,10 @@ void FScintilla::collapse(int level2Collapse, bool mode)
 
 	int maxLine = SendScintilla(SCI_GETLINECOUNT);
 
-	for (int line = 0; line < maxLine; ++line) 
+	for (int line = 0; line < maxLine; ++line)
 	{
 		int level = SendScintilla(SCI_GETFOLDLEVEL, line);
-		if (level & SC_FOLDLEVELHEADERFLAG) 
+		if (level & SC_FOLDLEVELHEADERFLAG)
 		{
 			level -= SC_FOLDLEVELBASE;
 			if (level2Collapse == (level & SC_FOLDLEVELNUMBERMASK))
@@ -551,6 +596,21 @@ void FScintilla::collapse(int level2Collapse, bool mode)
 	}
 
 	//runMarkers(true, 0, true, false);
+}
+
+bool FScintilla::event(QEvent *e)
+{
+	if (e->type() == QEvent::KeyPress)
+	{
+		QKeyEvent * const ke = static_cast<QKeyEvent*>(e);
+		if (ke->key() == Qt::Key_Backtab && ke->modifiers())
+		{
+			unindent();
+			ke->accept();
+			return true;
+		}
+	}
+	return QsciScintilla::event(e);
 }
 
 void FScintilla::wheelEvent(QWheelEvent *event)
