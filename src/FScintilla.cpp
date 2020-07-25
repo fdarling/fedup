@@ -114,6 +114,9 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 	/*SendScintilla(SCI_MARKERDEFINE, EDITPANE_ERROR_MARKER_ID, SC_MARK_BACKGROUND);
 	SendScintilla(SCI_MARKERSETBACK, EDITPANE_ERROR_MARKER_ID, EDITPANE_ERROR_BACKGROUND_COLOR);*/
 
+	setMatchedBraceForegroundColor(Qt::red);
+	setMatchedBraceBackgroundColor(Qt::white);
+
 	setModified(false);
 
 	connect((QObject*)verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(_slot_Scrolled())); // NOTE: cast necessary because QScrollBar has only been forward declared, we don't know that it inherits QObject
