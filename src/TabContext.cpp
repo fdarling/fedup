@@ -38,6 +38,9 @@ void TabContext::restore(FScintilla *editor) const
 
 	editor->setLexer(lexer);
 	editor->setContractedFolds(contractedFolds);
+	// HACK this isn't the best place to put this...
+	editor->setMatchedBraceForegroundColor(Qt::red);
+	editor->setMatchedBraceBackgroundColor(Qt::white);
 }
 
 } // namespace fedup
