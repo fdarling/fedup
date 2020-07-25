@@ -485,7 +485,13 @@ void FScintilla::findPrevBookmark()
 {
 	int line = -1, index = -1;
 	getCursorPosition(&line, &index);
-	const int markedLine = markerFindPrevious(line-1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	int markedLine = markerFindPrevious(line-1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	if (markedLine != -1)
+	{
+		goToLine(markedLine);
+		return;
+	}
+	markedLine = markerFindPrevious(lines(), 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
 	if (markedLine != -1)
 		goToLine(markedLine);
 }
@@ -494,7 +500,13 @@ void FScintilla::findNextBookmark()
 {
 	int line = -1, index = -1;
 	getCursorPosition(&line, &index);
-	const int markedLine = markerFindNext(line+1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	int markedLine = markerFindNext(line+1, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
+	if (markedLine != -1)
+	{
+		goToLine(markedLine);
+		return;
+	}
+	markedLine = markerFindNext(0, 1 << FSCINTILLA_BOOKMARK_MARKER_ID);
 	if (markedLine != -1)
 		goToLine(markedLine);
 }
