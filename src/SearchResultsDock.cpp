@@ -61,6 +61,8 @@ void SearchResultsDock::startSearch(const QString &term)
 
 void SearchResultsDock::addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength)
 {
+	Q_UNUSED(highlightStart);
+	Q_UNUSED(highlightLength);
 	setVisible(true);
 	if (_lastFilePath != filePath)
 	{

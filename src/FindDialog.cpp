@@ -756,10 +756,10 @@ static QString ConvertFromExtended(const QString &query)
 				case '0': result.append('\0'); break;
 				case 't': result.append('\t'); break;
 				case '\\': result.append('\\'); break;
-				case 'b':
-				case 'd':
-				case 'o':
-				case 'x':
+				case 'b': __attribute__ ((fallthrough));
+				case 'd': __attribute__ ((fallthrough));
+				case 'o': __attribute__ ((fallthrough));
+				case 'x': __attribute__ ((fallthrough));
 				case 'u':
 				{
 					int size = 0, base = 0;
@@ -791,6 +791,7 @@ static QString ConvertFromExtended(const QString &query)
 					}
 					//not enough chars to make parameter, use default method as fallback
 				}
+				__attribute__ ((fallthrough));
 				default:
 				{
 					result.append('\\');

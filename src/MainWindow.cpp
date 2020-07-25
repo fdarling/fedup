@@ -581,6 +581,7 @@ void MainWindow::_slot_Uncollapse7()
 
 void MainWindow::showEvent(QShowEvent *event)
 {
+	Q_UNUSED(event);
 	_actions->viewFullscreen->setChecked(isFullScreen());
 }
 
