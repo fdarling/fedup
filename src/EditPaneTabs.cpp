@@ -114,7 +114,7 @@ void EditPaneTabs::_slot_TabMoved(int from, int to)
 
 void EditPaneTabs::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() != Qt::RightButton)
+	if (event->button() != Qt::RightButton && event->button() != Qt::MiddleButton)
 		return QTabBar::mousePressEvent(event);
 
 	// compute the tab number
@@ -123,6 +123,12 @@ void EditPaneTabs::mousePressEvent(QMouseEvent *event)
 
 	if (clickedTabIndex == -1)
 		return QTabBar::mousePressEvent(event);
+
+	if (event->button() == Qt::MiddleButton)
+	{
+		emit tabCloseRequested(clickedTabIndex);
+		return;
+    }
 
 	QMenu menu;
 	QAction * const closeAction        = menu.addAction("Close");
