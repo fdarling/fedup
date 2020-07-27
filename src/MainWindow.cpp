@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	setStatusBar(_statusbar);
 	setCentralWidget(_editpane);
 	addDockWidget(Qt::BottomDockWidgetArea, _searchResultsDock);
+	setContextMenuPolicy(Qt::NoContextMenu); // to prevent the default toolbar/dock widget show/hide context menu
 
 	_SetupActions();
 	_SetupConnections();

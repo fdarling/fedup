@@ -5,6 +5,7 @@ namespace fedup {
 
 ToolBar::ToolBar(Actions *actions, QWidget *parent) : QToolBar(parent)
 {
+	setFloatable(false);
 	setMovable(false);
 	setIconSize(QSize(16, 16));
 
