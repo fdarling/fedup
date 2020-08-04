@@ -56,14 +56,14 @@ SOURCES = \
     src/MainWindow.cpp \
     src/main.cpp
 
-Release:DESTDIR = ./
-Release:OBJECTS_DIR = release/.obj
-Release:MOC_DIR = release/.moc
-Release:RCC_DIR = release/.rcc
-Release:UI_DIR = release/.ui
-
-Debug:DESTDIR = debug/
-Debug:OBJECTS_DIR = debug/.obj
-Debug:MOC_DIR = debug/.moc
-Debug:RCC_DIR = debug/.rcc
-Debug:UI_DIR = debug/.ui
+CONFIG(release, debug|release) {
+OBJECTS_DIR=build_release/obj
+MOC_DIR=build_release/moc
+RCC_DIR=build_release/rcc
+}
+CONFIG(debug, debug|release) {
+OBJECTS_DIR=build_debug/obj
+MOC_DIR=build_debug/moc
+RCC_DIR=build_debug/rcc
+TARGET = fedup_debug
+}
