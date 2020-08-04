@@ -5,20 +5,20 @@ namespace fedup {
 
 enum OpenResult
 {
-	OpenSucceeded,
-	OpenAlreadyOpen,
-	OpenDoesntExist,
-	OpenAccessDenied,
-	OpenReadError
+    OpenSucceeded,
+    OpenAlreadyOpen,
+    OpenDoesntExist,
+    OpenAccessDenied,
+    OpenReadError
 };
 
 enum SaveResult
 {
-	SaveNothingToSave,
-	SaveSucceeded,
-	SaveDirectoryDoesntExist,
-	SaveAccessDenied,
-	SaveWriteError
+    SaveNothingToSave,
+    SaveSucceeded,
+    SaveDirectoryDoesntExist,
+    SaveAccessDenied,
+    SaveWriteError
 };
 
 } // namespace fedup

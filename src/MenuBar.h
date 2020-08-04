@@ -14,14 +14,14 @@ class RecentFilesList;
 
 class MenuBar : public QMenuBar
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	MenuBar(Actions *actions, QSettings &settings, QWidget *parent = NULL);
-	~MenuBar();
+    MenuBar(Actions *actions, QSettings &settings, QWidget *parent = NULL);
+    ~MenuBar();
 
-	RecentFilesList * recentFilesList() const {return _recentFilesList;}
+    RecentFilesList * recentFilesList() const {return _recentFilesList;}
 protected:
-	RecentFilesList *_recentFilesList;
+    RecentFilesList *_recentFilesList;
 };
 
 } // namespace fedup

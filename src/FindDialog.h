@@ -19,61 +19,61 @@ class FScintilla;
 
 class FindDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	FindDialog(FScintilla *editor, QWidget *parent = NULL);
-	~FindDialog();
+    FindDialog(FScintilla *editor, QWidget *parent = NULL);
+    ~FindDialog();
 public slots:
-	void showFind();
-	void showReplace();
-	void showMark();
-	void showFindInFiles();
-	void findNext();
-	void findPrev();
-	void setCurrentDirectory(const QString &dirPath);
+    void showFind();
+    void showReplace();
+    void showMark();
+    void showFindInFiles();
+    void findNext();
+    void findPrev();
+    void setCurrentDirectory(const QString &dirPath);
 signals:
-	void sig_SearchStarted(const QString &term);
-	void sig_ResultFound(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
-	void sig_SearchEnded();
+    void sig_SearchStarted(const QString &term);
+    void sig_ResultFound(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
+    void sig_SearchEnded();
 protected slots:
-	void _slot_FindNext();
-	void _slot_Replace();
-	void _slot_ReplaceAll();
-	void _slot_Count();
-	void _slot_FindAll();
-	void _slot_FindInFiles();
-	void _slot_ReplaceInFiles();
-	void _slot_Browse();
-	void _slot_FocusChanged(QWidget *old, QWidget *now);
-	void _slot_CurrentChanged(int index);
-	void _slot_FindReplaceTextChanged();
-	void _slot_DirectoryTextChanged();
-	void _slot_MaybeUpdateDirectoryText();
+    void _slot_FindNext();
+    void _slot_Replace();
+    void _slot_ReplaceAll();
+    void _slot_Count();
+    void _slot_FindAll();
+    void _slot_FindInFiles();
+    void _slot_ReplaceInFiles();
+    void _slot_Browse();
+    void _slot_FocusChanged(QWidget *old, QWidget *now);
+    void _slot_CurrentChanged(int index);
+    void _slot_FindReplaceTextChanged();
+    void _slot_DirectoryTextChanged();
+    void _slot_MaybeUpdateDirectoryText();
 protected:
-	void showEvent(QShowEvent *event);
-	void hideEvent(QHideEvent *event);
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 
-	bool _FindFirst(bool skipSelection = true);
-	bool _Replace();
-	void _FindInFiles(bool replacing = false);
-	bool _IsFindEnabled() const;
-	bool _IsFindInFilesEnabled() const;
-	bool _IsReplaceInFilesEnabled() const;
-	bool _IsReplaceEnabled() const;
-	int _FindHelper(const QString &filePath, bool emitting);
+    bool _FindFirst(bool skipSelection = true);
+    bool _Replace();
+    void _FindInFiles(bool replacing = false);
+    bool _IsFindEnabled() const;
+    bool _IsFindInFilesEnabled() const;
+    bool _IsReplaceInFilesEnabled() const;
+    bool _IsReplaceEnabled() const;
+    int _FindHelper(const QString &filePath, bool emitting);
 
-	class ComboBoxArea;
-	class ButtonsArea;
-	class OptionsArea;
+    class ComboBoxArea;
+    class ButtonsArea;
+    class OptionsArea;
 
-	ComboBoxArea *comboboxArea;
-	ButtonsArea *buttonsArea;
-	OptionsArea *optionsArea;
-	QTabBar * _tabbar;
-	FScintilla *_editor;
-	FScintilla *_hiddenEditor;
-	QRect _geometry;
-	QString _currentDirectory;
+    ComboBoxArea *comboboxArea;
+    ButtonsArea *buttonsArea;
+    OptionsArea *optionsArea;
+    QTabBar * _tabbar;
+    FScintilla *_editor;
+    FScintilla *_hiddenEditor;
+    QRect _geometry;
+    QString _currentDirectory;
 };
 
 } // namespace fedup

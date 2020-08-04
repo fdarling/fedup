@@ -17,28 +17,28 @@ namespace fedup {
 
 class RecentFilesList : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	RecentFilesList(QMenu *ffileMenu, QSettings &ssettings, QObject *parent = NULL);
-	~RecentFilesList();
+    RecentFilesList(QMenu *ffileMenu, QSettings &ssettings, QObject *parent = NULL);
+    ~RecentFilesList();
 
-	void saveSettings(QSettings &settings);
+    void saveSettings(QSettings &settings);
 signals:
-	void recentFileClicked(const QString &filePath);
+    void recentFileClicked(const QString &filePath);
 public slots:
-	void slot_FileOpened(const QString &filePath);
+    void slot_FileOpened(const QString &filePath);
 protected slots:
-	void slot_RecentFileClicked(QAction *action);
+    void slot_RecentFileClicked(QAction *action);
 protected:
-	typedef QAction* QActionPointer;
-	typedef QMap<QString, QActionPointer> PathToActionMap;
-	typedef QList<QActionPointer> QActionList;
+    typedef QAction* QActionPointer;
+    typedef QMap<QString, QActionPointer> PathToActionMap;
+    typedef QList<QActionPointer> QActionList;
 
-	QMenu * const _fileMenu;
-	QActionPointer _separator;
-	QActionGroup * _recentFilesGroup;
-	PathToActionMap _recentFilesMap;
-	QActionList _recentFilesList;
+    QMenu * const _fileMenu;
+    QActionPointer _separator;
+    QActionGroup * _recentFilesGroup;
+    PathToActionMap _recentFilesMap;
+    QActionList _recentFilesList;
 };
 
 } // namespace fedup

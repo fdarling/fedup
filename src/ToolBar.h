@@ -9,10 +9,10 @@ class Actions;
 
 class ToolBar : public QToolBar
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	ToolBar(Actions *actions, QWidget *parent = NULL);
-	~ToolBar();
+    ToolBar(Actions *actions, QWidget *parent = NULL);
+    ~ToolBar();
 };
 
 } // namespace fedup

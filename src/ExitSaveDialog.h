@@ -16,23 +16,23 @@ class EditPane;
 
 class ExitSaveDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	ExitSaveDialog(QWidget *parent = NULL);
-	~ExitSaveDialog();
+    ExitSaveDialog(QWidget *parent = NULL);
+    ~ExitSaveDialog();
 
-	bool shouldClose(MainWindow *mainWindow, EditPane *editPane);
+    bool shouldClose(MainWindow *mainWindow, EditPane *editPane);
 protected slots:
-	void _slot_Save();
-	void _slot_Skip();
-	void _slot_CheckAll();
-	void _slot_UncheckAll();
-	void _slot_SaveSelected();
-	void _slot_RowActivated(const QModelIndex &index);
+    void _slot_Save();
+    void _slot_Skip();
+    void _slot_CheckAll();
+    void _slot_UncheckAll();
+    void _slot_SaveSelected();
+    void _slot_RowActivated(const QModelIndex &index);
 protected:
-	QTableWidget *_table;
-	MainWindow *_mainWindow;
-	EditPane *_editPane;
+    QTableWidget *_table;
+    MainWindow *_mainWindow;
+    EditPane *_editPane;
 };
 
 } // namespace fedup

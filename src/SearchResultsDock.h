@@ -12,28 +12,28 @@ namespace fedup {
 
 class SearchResultsDock : public QDockWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SearchResultsDock(QWidget *parent = NULL);
-	~SearchResultsDock();
+    SearchResultsDock(QWidget *parent = NULL);
+    ~SearchResultsDock();
 
-	void clear();
+    void clear();
 signals:
-	void requestOpenFileLine(const QString &filePath, int line);
+    void requestOpenFileLine(const QString &filePath, int line);
 public slots:
-	void startSearch(const QString &term);
-	void addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
-	void endSearch();
+    void startSearch(const QString &term);
+    void addResult(const QString &filePath, int line, const QString &result, int highlightStart, int highlightLength);
+    void endSearch();
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
-	void _FinishFile();
-	QsciScintilla *_editor;
-	QString _lastFilePath;
-	int _filePathLine;
-	int _currentLine;
-	int _fileCount;
-	int _hitCount;
-	int _totalHits;
+    bool eventFilter(QObject *obj, QEvent *event);
+    void _FinishFile();
+    QsciScintilla *_editor;
+    QString _lastFilePath;
+    int _filePathLine;
+    int _currentLine;
+    int _fileCount;
+    int _hitCount;
+    int _totalHits;
 };
 
 } // namespace fedup

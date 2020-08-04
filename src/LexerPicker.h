@@ -14,7 +14,7 @@ namespace fedup {
 class LexerPicker
 {
 public:
-	static QsciLexer * chooseLexer(const QString &filename);
+    static QsciLexer * chooseLexer(const QString &filename);
 };
 
 } // namespace fedup
