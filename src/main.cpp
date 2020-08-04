@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 	fedup::MainWindow win;
 	win.show();
 
-	QObject::connect(&app, SIGNAL(messageReceived(const QString&)), &win, SLOT(open(const QString&)));
+	QObject::connect(&app, &QtSingleApplication::messageReceived, &win, qOverload<const QString &>(&fedup::MainWindow::open));
 	openArguments(OpenFunctor(win));
 	return app.exec();
 }

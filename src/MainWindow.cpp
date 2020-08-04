@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	{
 		QTimer * const timer = new QTimer(this);
-		connect(timer, SIGNAL(timeout()), this, SLOT(_slot_SaveSettings()));
+		connect(timer, &QTimer::timeout, this, &MainWindow::_slot_SaveSettings);
 		timer->start(30000); // TODO make this configurable, currently auto-save the program state every 30 seconds
 	}
 }
@@ -92,19 +92,19 @@ void MainWindow::_SetupActions()
 	_actions->fileSaveAs->setEnabled(false);
 	_actions->fileClose->setEnabled(false);
 	_actions->fileCloseAll->setEnabled(false);
-	connect(e,    SIGNAL(modificationChanged(bool)), _actions->fileSave,     SLOT(setEnabled(bool)));
-	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileSaveAs,   SLOT(setEnabled(bool)));
-	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileClose,    SLOT(setEnabled(bool)));
-	connect(tabs, SIGNAL(containsTabsChanged(bool)), _actions->fileCloseAll, SLOT(setEnabled(bool)));
+	connect(e,    &FScintilla::modificationChanged,   _actions->fileSave,     &QAction::setEnabled);
+	connect(tabs, &EditPaneTabs::containsTabsChanged, _actions->fileSaveAs,   &QAction::setEnabled);
+	connect(tabs, &EditPaneTabs::containsTabsChanged, _actions->fileClose,    &QAction::setEnabled);
+	connect(tabs, &EditPaneTabs::containsTabsChanged, _actions->fileCloseAll, &QAction::setEnabled);
 
-	connect(_actions->fileNew, SIGNAL(triggered()), _editpane, SLOT(openNew()));
-	connect(_actions->fileOpen, SIGNAL(triggered()), this, SLOT(open()));
-	connect(_actions->fileReload, SIGNAL(triggered()), _editpane, SLOT(reload()));
-	connect(_actions->fileSave, SIGNAL(triggered()), this, SLOT(save()));
-	connect(_actions->fileSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
-	connect(_actions->fileClose, SIGNAL(triggered()), _editpane, SLOT(closeTab()));
-	connect(_actions->fileCloseAll, SIGNAL(triggered()), _editpane, SLOT(closeAll()));
-	connect(_actions->fileExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(_actions->fileNew, &QAction::triggered, _editpane, &EditPane::openNew);
+	connect(_actions->fileOpen, &QAction::triggered, this, qOverload<>(&MainWindow::open));
+	connect(_actions->fileReload, &QAction::triggered, _editpane, &EditPane::reload);
+	connect(_actions->fileSave, &QAction::triggered, this, &MainWindow::save);
+	connect(_actions->fileSaveAs, &QAction::triggered, this, qOverload<>(&MainWindow::saveAs));
+	connect(_actions->fileClose, &QAction::triggered, _editpane, &EditPane::closeTab);
+	connect(_actions->fileCloseAll, &QAction::triggered, _editpane, &EditPane::closeAll);
+	connect(_actions->fileExit, &QAction::triggered, this, &MainWindow::close);
 
 	// make the actions know when they are available
 	_actions->editUndo->setEnabled(false);
@@ -112,41 +112,41 @@ void MainWindow::_SetupActions()
 	_actions->editCut->setEnabled(false);
 	_actions->editCopy->setEnabled(false);
 	_actions->editDelete->setEnabled(false);
-	connect(e, SIGNAL(undoAvailable(bool)), _actions->editUndo, SLOT(setEnabled(bool)));
-	connect(e, SIGNAL(redoAvailable(bool)), _actions->editRedo, SLOT(setEnabled(bool)));
-	connect(e, SIGNAL(copyAvailable(bool)), _actions->editCut, SLOT(setEnabled(bool)));
-	connect(e, SIGNAL(copyAvailable(bool)), _actions->editCopy, SLOT(setEnabled(bool)));
-	connect(e, SIGNAL(copyAvailable(bool)), _actions->editDelete, SLOT(setEnabled(bool)));
+	connect(e, &FScintilla::undoAvailable, _actions->editUndo, &QAction::setEnabled);
+	connect(e, &FScintilla::redoAvailable, _actions->editRedo, &QAction::setEnabled);
+	connect(e, &FScintilla::copyAvailable, _actions->editCut, &QAction::setEnabled);
+	connect(e, &FScintilla::copyAvailable, _actions->editCopy, &QAction::setEnabled);
+	connect(e, &FScintilla::copyAvailable, _actions->editDelete, &QAction::setEnabled);
 
-	connect(_actions->editUndo, SIGNAL(triggered()), e, SLOT(undo()));
-	connect(_actions->editRedo, SIGNAL(triggered()), e, SLOT(redo()));
-	connect(_actions->editCut, SIGNAL(triggered()), e, SLOT(cut()));
-	connect(_actions->editCopy, SIGNAL(triggered()), e, SLOT(copy()));
-	connect(_actions->editPaste, SIGNAL(triggered()), e, SLOT(paste()));
-	connect(_actions->editDelete, SIGNAL(triggered()), e, SLOT(removeSelectedText()));
-	connect(_actions->editSelectAll, SIGNAL(triggered()), e, SLOT(selectAll()));
-	connect(_actions->editDuplicateLines, SIGNAL(triggered()), e, SLOT(duplicateLines()));
-	connect(_actions->editDeleteLine, SIGNAL(triggered()), e, SLOT(deleteLine()));
-	connect(_actions->editUndeleteLines, SIGNAL(triggered()), e, SLOT(undeleteLines()));
-	connect(_actions->editMoveLineUp, SIGNAL(triggered()), e, SLOT(moveLineUp()));
-	connect(_actions->editMoveLineDown, SIGNAL(triggered()), e, SLOT(moveLineDown()));
-	connect(_actions->editToggleBlockComment, SIGNAL(triggered()), e, SLOT(toggleCommented()));
-	connect(_actions->editTrimTrailingSpaces, SIGNAL(triggered()), e, SLOT(trimTrailingWhitespace()));
-	connect(_actions->editSimplifyWhitespace, SIGNAL(triggered()), e, SLOT(simplifyWhitespace()));
+	connect(_actions->editUndo, &QAction::triggered, e, &FScintilla::undo);
+	connect(_actions->editRedo, &QAction::triggered, e, &FScintilla::redo);
+	connect(_actions->editCut, &QAction::triggered, e, &FScintilla::cut);
+	connect(_actions->editCopy, &QAction::triggered, e, &FScintilla::copy);
+	connect(_actions->editPaste, &QAction::triggered, e, &FScintilla::paste);
+	connect(_actions->editDelete, &QAction::triggered, e, &FScintilla::removeSelectedText);
+	connect(_actions->editSelectAll, &QAction::triggered, e, &FScintilla::selectAll);
+	connect(_actions->editDuplicateLines, &QAction::triggered, e, &FScintilla::duplicateLines);
+	connect(_actions->editDeleteLine, &QAction::triggered, e, &FScintilla::deleteLine);
+	connect(_actions->editUndeleteLines, &QAction::triggered, e, &FScintilla::undeleteLines);
+	connect(_actions->editMoveLineUp, &QAction::triggered, e, &FScintilla::moveLineUp);
+	connect(_actions->editMoveLineDown, &QAction::triggered, e, &FScintilla::moveLineDown);
+	connect(_actions->editToggleBlockComment, &QAction::triggered, e, &FScintilla::toggleCommented);
+	connect(_actions->editTrimTrailingSpaces, &QAction::triggered, e, &FScintilla::trimTrailingWhitespace);
+	connect(_actions->editSimplifyWhitespace, &QAction::triggered, e, &FScintilla::simplifyWhitespace);
 	_slot_EolModeChanged(e->eolMode()); // set the initial value
-	connect(_actions->editEolGroup, SIGNAL(triggered(QAction*)), this, SLOT(_slot_EditEolModeTriggered(QAction*)));
+	connect(_actions->editEolGroup, &QActionGroup::triggered, this, &MainWindow::_slot_EditEolModeTriggered);
 
-	connect(_actions->searchFind, SIGNAL(triggered()), _findDialog, SLOT(showFind()));
-	connect(_actions->searchFindInFiles, SIGNAL(triggered()), _findDialog, SLOT(showFindInFiles()));
-	connect(_actions->searchFindNext, SIGNAL(triggered()), _findDialog, SLOT(findNext()));
-	connect(_actions->searchFindPrev, SIGNAL(triggered()), _findDialog, SLOT(findPrev()));
-	connect(_actions->searchReplace, SIGNAL(triggered()), _findDialog, SLOT(showReplace()));
-	connect(_actions->searchGoTo, SIGNAL(triggered()), this, SLOT(_slot_SearchGoTo()));
-	connect(_actions->searchGoToMatchingBrace, SIGNAL(triggered()), e, SLOT(moveToMatchingBrace())); // TODO disable this when there isn't a matching brace to go to, I need to have FScintilla emit a signal...
-	connect(_actions->searchBookmarkToggle, SIGNAL(triggered()), e, SLOT(toggleBookmark()));
-	connect(_actions->searchBookmarkNext, SIGNAL(triggered()), e, SLOT(findNextBookmark()));
-	connect(_actions->searchBookmarkPrev, SIGNAL(triggered()), e, SLOT(findPrevBookmark()));
-	connect(_actions->searchBookmarkClearAll, SIGNAL(triggered()), e, SLOT(clearBookmarks()));
+	connect(_actions->searchFind, &QAction::triggered, _findDialog, &FindDialog::showFind);
+	connect(_actions->searchFindInFiles, &QAction::triggered, _findDialog, &FindDialog::showFindInFiles);
+	connect(_actions->searchFindNext, &QAction::triggered, _findDialog, &FindDialog::findNext);
+	connect(_actions->searchFindPrev, &QAction::triggered, _findDialog, &FindDialog::findPrev);
+	connect(_actions->searchReplace, &QAction::triggered, _findDialog, &FindDialog::showReplace);
+	connect(_actions->searchGoTo, &QAction::triggered, this, &MainWindow::_slot_SearchGoTo);
+	connect(_actions->searchGoToMatchingBrace, &QAction::triggered, e, &FScintilla::moveToMatchingBrace); // TODO disable this when there isn't a matching brace to go to, I need to have FScintilla emit a signal...
+	connect(_actions->searchBookmarkToggle, &QAction::triggered, e, qOverload<>(&FScintilla::toggleBookmark));
+	connect(_actions->searchBookmarkNext, &QAction::triggered, e, &FScintilla::findNextBookmark);
+	connect(_actions->searchBookmarkPrev, &QAction::triggered, e, &FScintilla::findPrevBookmark);
+	connect(_actions->searchBookmarkClearAll, &QAction::triggered, e, &FScintilla::clearBookmarks);
 
 	// make the actions know when they are available
 	_actions->viewSearchResults->setChecked(_searchResultsDock->isVisible());
@@ -156,44 +156,44 @@ void MainWindow::_SetupActions()
 	_actions->viewSymbolWhitespace->setChecked(e->whitespaceVisibility() != QsciScintilla::WsInvisible);
 	_actions->viewSymbolNewlines->setChecked(e->eolVisibility());
 	_actions->viewIndentationGuide->setChecked(e->indentationGuides());
-	connect(_searchResultsDock, SIGNAL(visibilityChanged(bool)), _actions->viewSearchResults, SLOT(setChecked(bool)));
-	connect(this, SIGNAL(sig_AlwaysOnTopChanged(bool)), _actions->viewAlwaysOnTop, SLOT(setChecked(bool)));
-	connect(this, SIGNAL(sig_FullscreenChanged(bool)), _actions->viewFullscreen, SLOT(setChecked(bool)));
+	connect(_searchResultsDock, &SearchResultsDock::visibilityChanged, _actions->viewSearchResults, &QAction::setChecked);
+	connect(this, &MainWindow::sig_AlwaysOnTopChanged, _actions->viewAlwaysOnTop, &QAction::setChecked);
+	connect(this, &MainWindow::sig_FullscreenChanged, _actions->viewFullscreen, &QAction::setChecked);
 
-	connect(_actions->viewAlwaysOnTop, SIGNAL(toggled(bool)), this, SLOT(_slot_SetAlwaysOnTop(bool)));
-	connect(_actions->viewFullscreen, SIGNAL(toggled(bool)), this, SLOT(_slot_SetFullscreen(bool)));
-	connect(_actions->viewSymbolWhitespace, SIGNAL(toggled(bool)), e, SLOT(setWhitespaceVisible(bool)));
-	connect(_actions->viewIndentationGuide, SIGNAL(toggled(bool)), e, SLOT(setIndentationGuides(bool)));
-	connect(_actions->viewSymbolNewlines, SIGNAL(toggled(bool)), e, SLOT(setEolVisibility(bool)));
-	connect(_actions->viewFoldAll, SIGNAL(triggered()), e, SLOT(foldAll()));
-	connect(_actions->viewUnfoldAll, SIGNAL(triggered()), e, SLOT(unfoldAll()));
-	connect(_actions->viewCollapse1, SIGNAL(triggered()), this, SLOT(_slot_Collapse0()));
-	connect(_actions->viewCollapse2, SIGNAL(triggered()), this, SLOT(_slot_Collapse1()));
-	connect(_actions->viewCollapse3, SIGNAL(triggered()), this, SLOT(_slot_Collapse2()));
-	connect(_actions->viewCollapse4, SIGNAL(triggered()), this, SLOT(_slot_Collapse3()));
-	connect(_actions->viewCollapse5, SIGNAL(triggered()), this, SLOT(_slot_Collapse4()));
-	connect(_actions->viewCollapse6, SIGNAL(triggered()), this, SLOT(_slot_Collapse5()));
-	connect(_actions->viewCollapse7, SIGNAL(triggered()), this, SLOT(_slot_Collapse6()));
-	connect(_actions->viewCollapse8, SIGNAL(triggered()), this, SLOT(_slot_Collapse7()));
-	connect(_actions->viewUncollapse1, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse0()));
-	connect(_actions->viewUncollapse2, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse1()));
-	connect(_actions->viewUncollapse3, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse2()));
-	connect(_actions->viewUncollapse4, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse3()));
-	connect(_actions->viewUncollapse5, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse4()));
-	connect(_actions->viewUncollapse6, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse5()));
-	connect(_actions->viewUncollapse7, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse6()));
-	connect(_actions->viewUncollapse8, SIGNAL(triggered()), this, SLOT(_slot_Uncollapse7()));
-	connect(_actions->viewSearchResults, SIGNAL(toggled(bool)), _searchResultsDock, SLOT(setVisible(bool)));
+	connect(_actions->viewAlwaysOnTop, &QAction::toggled, this, &MainWindow::_slot_SetAlwaysOnTop);
+	connect(_actions->viewFullscreen, &QAction::toggled, this, &MainWindow::_slot_SetFullscreen);
+	connect(_actions->viewSymbolWhitespace, &QAction::toggled, e, &FScintilla::setWhitespaceVisible);
+	connect(_actions->viewIndentationGuide, &QAction::toggled, e, &FScintilla::setIndentationGuides);
+	connect(_actions->viewSymbolNewlines, &QAction::toggled, e, &FScintilla::setEolVisibility);
+	connect(_actions->viewFoldAll, &QAction::triggered, e, &FScintilla::foldAll);
+	connect(_actions->viewUnfoldAll, &QAction::triggered, e, &FScintilla::unfoldAll);
+	connect(_actions->viewCollapse1, &QAction::triggered, this, &MainWindow::_slot_Collapse0);
+	connect(_actions->viewCollapse2, &QAction::triggered, this, &MainWindow::_slot_Collapse1);
+	connect(_actions->viewCollapse3, &QAction::triggered, this, &MainWindow::_slot_Collapse2);
+	connect(_actions->viewCollapse4, &QAction::triggered, this, &MainWindow::_slot_Collapse3);
+	connect(_actions->viewCollapse5, &QAction::triggered, this, &MainWindow::_slot_Collapse4);
+	connect(_actions->viewCollapse6, &QAction::triggered, this, &MainWindow::_slot_Collapse5);
+	connect(_actions->viewCollapse7, &QAction::triggered, this, &MainWindow::_slot_Collapse6);
+	connect(_actions->viewCollapse8, &QAction::triggered, this, &MainWindow::_slot_Collapse7);
+	connect(_actions->viewUncollapse1, &QAction::triggered, this, &MainWindow::_slot_Uncollapse0);
+	connect(_actions->viewUncollapse2, &QAction::triggered, this, &MainWindow::_slot_Uncollapse1);
+	connect(_actions->viewUncollapse3, &QAction::triggered, this, &MainWindow::_slot_Uncollapse2);
+	connect(_actions->viewUncollapse4, &QAction::triggered, this, &MainWindow::_slot_Uncollapse3);
+	connect(_actions->viewUncollapse5, &QAction::triggered, this, &MainWindow::_slot_Uncollapse4);
+	connect(_actions->viewUncollapse6, &QAction::triggered, this, &MainWindow::_slot_Uncollapse5);
+	connect(_actions->viewUncollapse7, &QAction::triggered, this, &MainWindow::_slot_Uncollapse6);
+	connect(_actions->viewUncollapse8, &QAction::triggered, this, &MainWindow::_slot_Uncollapse7);
+	connect(_actions->viewSearchResults, &QAction::toggled, _searchResultsDock, &SearchResultsDock::setVisible);
 
 	// make the actions know when they are available
 	_actions->macroStartRecording->setEnabled(true);
 	_actions->macroStopRecording->setEnabled(false);
 	_actions->macroPlayback->setEnabled(false);
 	_actions->macroRunMultiple->setEnabled(false);
-	connect(_actions->macroStartRecording, SIGNAL(triggered()), this, SLOT(_slot_MacroStartRecording()));
-	connect(_actions->macroStopRecording, SIGNAL(triggered()), this, SLOT(_slot_MacroStopRecording()));
-	connect(_actions->macroPlayback, SIGNAL(triggered()), this, SLOT(_slot_MacroPlayback()));
-	connect(_actions->macroRunMultiple, SIGNAL(triggered()), this, SLOT(_slot_MacroRunMultiple()));
+	connect(_actions->macroStartRecording, &QAction::triggered, this, &MainWindow::_slot_MacroStartRecording);
+	connect(_actions->macroStopRecording, &QAction::triggered, this, &MainWindow::_slot_MacroStopRecording);
+	connect(_actions->macroPlayback, &QAction::triggered, this, &MainWindow::_slot_MacroPlayback);
+	connect(_actions->macroRunMultiple, &QAction::triggered, this, &MainWindow::_slot_MacroRunMultiple);
 }
 
 void MainWindow::_SetupConnections()
@@ -201,27 +201,27 @@ void MainWindow::_SetupConnections()
 	FScintilla * const e = _editpane->editor();
 	EditPaneTabs * const tabs = _editpane->tabs();
 
-	connect(e, SIGNAL(cursorPositionChanged(int, int)), _statusbar, SLOT(slot_SetCursorPosition(int, int)));
-	connect(e, SIGNAL(selectionLengthChanged(int)), _statusbar, SLOT(slot_SetSelectionLength(int)));
-	connect(e, SIGNAL(lineCountChanged(int)), _statusbar, SLOT(slot_SetLineCount(int)));
-	connect(e, SIGNAL(lengthChanged(int)), _statusbar, SLOT(slot_SetLength(int)));
-	connect(e, SIGNAL(lineChanged(int)), _gotoDialog, SLOT(slot_SetCurrentLine(int)));
-	connect(e, SIGNAL(positionChanged(int)), _gotoDialog, SLOT(slot_SetCurrentOffset(int)));
-	connect(e, SIGNAL(lineCountChanged(int)), _gotoDialog, SLOT(slot_SetMaxLine(int)));
-	connect(e, SIGNAL(lengthChanged(int)), _gotoDialog, SLOT(slot_SetMaxOffset(int))); // TODO use slot_SetLength instead?
-	connect(e, SIGNAL(eolModeChanged(FScintilla::EolMode)), this, SLOT(_slot_EolModeChanged(FScintilla::EolMode)));
-	connect(_gotoDialog, SIGNAL(goToLine(int)), e, SLOT(goToLine(int)));
-	connect(_gotoDialog, SIGNAL(goToOffset(int)), e, SLOT(goToOffset(int)));
+	connect(e, &FScintilla::cursorPositionChanged, _statusbar, &StatusBar::slot_SetCursorPosition);
+	connect(e, &FScintilla::selectionLengthChanged, _statusbar, &StatusBar::slot_SetSelectionLength);
+	connect(e, &FScintilla::lineCountChanged, _statusbar, &StatusBar::slot_SetLineCount);
+	connect(e, &FScintilla::lengthChanged, _statusbar, &StatusBar::slot_SetLength);
+	connect(e, &FScintilla::lineChanged, _gotoDialog, &GoToDialog::slot_SetCurrentLine);
+	connect(e, &FScintilla::positionChanged, _gotoDialog, &GoToDialog::slot_SetCurrentOffset);
+	connect(e, &FScintilla::lineCountChanged, _gotoDialog, &GoToDialog::slot_SetMaxLine);
+	connect(e, &FScintilla::lengthChanged, _gotoDialog, &GoToDialog::slot_SetMaxOffset); // TODO use slot_SetLength instead?
+	connect(e, &FScintilla::eolModeChanged, this, &MainWindow::_slot_EolModeChanged);
+	connect(_gotoDialog, &GoToDialog::goToLine, e, &FScintilla::goToLine);
+	connect(_gotoDialog, &GoToDialog::goToOffset, e, &FScintilla::goToOffset);
 
-	connect(_menubar->recentFilesList(), SIGNAL(recentFileClicked(const QString &)), this, SLOT(open(const QString &)));
+	connect(_menubar->recentFilesList(), &RecentFilesList::recentFileClicked, this, qOverload<const QString &>(&MainWindow::open));
 
-	connect(tabs, SIGNAL(tabChanged(TabContext *, TabContext *)), this, SLOT(_slot_TabChanged(TabContext *, TabContext *)));
+	connect(tabs, &EditPaneTabs::tabChanged, this, &MainWindow::_slot_TabChanged);
 
-	connect(_findDialog, SIGNAL(sig_SearchStarted(const QString &)), _searchResultsDock, SLOT(startSearch(const QString &)));
-	connect(_findDialog, SIGNAL(sig_ResultFound(const QString &, int, const QString &, int, int)), _searchResultsDock, SLOT(addResult(const QString &, int, const QString &, int, int)));
-	connect(_findDialog, SIGNAL(sig_SearchEnded()), _searchResultsDock, SLOT(endSearch()));
+	connect(_findDialog, &FindDialog::sig_SearchStarted, _searchResultsDock, &SearchResultsDock::startSearch);
+	connect(_findDialog, &FindDialog::sig_ResultFound, _searchResultsDock, &SearchResultsDock::addResult);
+	connect(_findDialog, &FindDialog::sig_SearchEnded, _searchResultsDock, &SearchResultsDock::endSearch);
 
-	connect(_searchResultsDock, SIGNAL(requestOpenFileLine(const QString &, int)), this, SLOT(_slot_OpenFileLine(const QString &, int)));
+	connect(_searchResultsDock, &SearchResultsDock::requestOpenFileLine, this, &MainWindow::_slot_OpenFileLine);
 }
 
 void MainWindow::open()
@@ -344,7 +344,7 @@ void MainWindow::_slot_MacroStartRecording()
 		if (_editorMacro)
 			delete _editorMacro;
 		_editorMacro = new QsciMacro(editor);
-		// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(_slot_MacroDestroyed()));
+		// connect(_editorMacro, &QsciMacro::destroyed, this, &MainWindow::slot_MacroDestroyed);
 	}
 	_editorMacro->startRecording();
 }
@@ -366,7 +366,7 @@ void MainWindow::_slot_MacroPlayback()
 		QsciMacro * const oldMacro = _editorMacro;
 		const QString saved = oldMacro->save();
 		_editorMacro = new QsciMacro(saved, editor);
-		// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(slot_MacroDestroyed()));
+		// connect(_editorMacro, &QsciMacro::destroyed, this, &MainWindow::slot_MacroDestroyed);
 		delete oldMacro;
 	}
 	_editorMacro->play();
@@ -385,7 +385,7 @@ void MainWindow::_slot_MacroRunMultiple()
 			QsciMacro * const oldMacro = _editorMacro;
 			const QString saved = oldMacro->save();
 			_editorMacro = new QsciMacro(saved, editor);
-			// connect(_editorMacro, SIGNAL(destroyed()), this, SLOT(slot_MacroDestroyed()));
+			// connect(_editorMacro, &QsciMacro::destroyed, this, &MainWindow::slot_MacroDestroyed);
 			delete oldMacro;
 		}
 		for (; numberOfTimes > 0; numberOfTimes--)

@@ -35,11 +35,11 @@ EditPane::EditPane(QWidget *parent) : QWidget(parent), _tabs(NULL)
 	vbox->addWidget(_tabs = new EditPaneTabs);
 	vbox->addWidget(_editor = new FScintilla);
 
-	connect(_tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(_slot_TabCloseRequested(int)));
-	connect(_tabs, SIGNAL(tabCloseAllButRequested(int)), this, SLOT(_slot_TabCloseAllButRequested(int)));
-	connect(_tabs, SIGNAL(tabRemoved(TabContext*)), this, SLOT(_slot_TabRemoved(TabContext*)));
-	connect(_tabs, SIGNAL(tabChanged(TabContext*, TabContext*)), this, SLOT(_slot_TabChanged(TabContext*, TabContext*)));
-	connect(_editor, SIGNAL(modificationChanged(bool)), _tabs, SLOT(slot_ModificationChanged(bool)));
+	connect(_tabs, &EditPaneTabs::tabCloseRequested, this, &EditPane::_slot_TabCloseRequested);
+	connect(_tabs, &EditPaneTabs::tabCloseAllButRequested, this, &EditPane::_slot_TabCloseAllButRequested);
+	connect(_tabs, &EditPaneTabs::tabRemoved, this, &EditPane::_slot_TabRemoved);
+	connect(_tabs, &EditPaneTabs::tabChanged, this, &EditPane::_slot_TabChanged);
+	connect(_editor, &FScintilla::modificationChanged, _tabs, &EditPaneTabs::slot_ModificationChanged);
 
 	_editor->setVisible(false);
 }

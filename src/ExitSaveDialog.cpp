@@ -39,7 +39,7 @@ ExitSaveDialog::ExitSaveDialog(QWidget *parent) : QDialog(parent), _table(NULL),
 		_table->setColumnCount(labels.size());
 		_table->setHorizontalHeaderLabels(labels);*/
 	}
-	connect(_table, SIGNAL(activated(const QModelIndex &)), this, SLOT(_slot_RowActivated(const QModelIndex &)));
+	connect(_table, &QTableWidget::activated, this, &ExitSaveDialog::_slot_RowActivated);
 
 	setWindowTitle("Unsaved tabs");
 
@@ -63,13 +63,13 @@ ExitSaveDialog::ExitSaveDialog(QWidget *parent) : QDialog(parent), _table(NULL),
 		vbox->addWidget(okButton);
 		vbox->addWidget(cancelButton);
 
-		connect(        saveButton, SIGNAL(clicked()), this, SLOT(_slot_Save()));
-		connect(        skipButton, SIGNAL(clicked()), this, SLOT(_slot_Skip()));
-		connect(   selectAllButton, SIGNAL(clicked()), this, SLOT(_slot_CheckAll()));
-		connect( unselectAllButton, SIGNAL(clicked()), this, SLOT(_slot_UncheckAll()));
-		connect(saveSelectedButton, SIGNAL(clicked()), this, SLOT(_slot_SaveSelected()));
-		connect(          okButton, SIGNAL(clicked()), this, SLOT(accept()));
-		connect(      cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+		connect(        saveButton, &QPushButton::clicked, this, &ExitSaveDialog::_slot_Save);
+		connect(        skipButton, &QPushButton::clicked, this, &ExitSaveDialog::_slot_Skip);
+		connect(   selectAllButton, &QPushButton::clicked, this, &ExitSaveDialog::_slot_CheckAll);
+		connect( unselectAllButton, &QPushButton::clicked, this, &ExitSaveDialog::_slot_UncheckAll);
+		connect(saveSelectedButton, &QPushButton::clicked, this, &ExitSaveDialog::_slot_SaveSelected);
+		connect(          okButton, &QPushButton::clicked, this, &ExitSaveDialog::accept);
+		connect(      cancelButton, &QPushButton::clicked, this, &ExitSaveDialog::reject);
 
 		hbox->addLayout(vbox);
 	}

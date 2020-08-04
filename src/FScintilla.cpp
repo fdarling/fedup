@@ -116,11 +116,11 @@ FScintilla::FScintilla(QWidget *parent) : QsciScintilla(parent), _selectionLengt
 
 	setModified(false);
 
-	connect((QObject*)verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(_slot_Scrolled())); // NOTE: cast necessary because QScrollBar has only been forward declared, we don't know that it inherits QObject
-	connect(this, SIGNAL(textChanged()), this, SLOT(_slot_TextChanged()));
-	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(_slot_CursorPositionChanged(int, int)));
-	connect(this, SIGNAL(selectionChanged()), this, SLOT(_slot_SelectionChanged()));
-	connect(this, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)), this, SLOT(_slot_MarginClicked(int, int, Qt::KeyboardModifiers)));
+	connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &FScintilla::_slot_Scrolled);
+	connect(this, &FScintilla::textChanged, this, &FScintilla::_slot_TextChanged);
+	connect(this, &FScintilla::cursorPositionChanged, this, &FScintilla::_slot_CursorPositionChanged);
+	connect(this, &FScintilla::selectionChanged, this, &FScintilla::_slot_SelectionChanged);
+	connect(this, &FScintilla::marginClicked, this, &FScintilla::_slot_MarginClicked);
 
 	// TODO put this kind of initialization stuff into a private member function
 	SendScintilla(SCI_MARKERADD, _currentLine, FSCINTILLA_ACTIVELINE_MARKER_ID);

@@ -14,7 +14,7 @@ RecentFilesList::RecentFilesList(QMenu *ffileMenu, QSettings &settings, QObject 
 {
 	// _fileMenu->insertAction(_separator, new QAction(QString("Testing 1 2 3"), this));
 	_recentFilesGroup = new QActionGroup(this);
-	connect(_recentFilesGroup, SIGNAL(triggered(QAction *)), this, SLOT(slot_RecentFileClicked(QAction *)));
+	connect(_recentFilesGroup, &QActionGroup::triggered, this, &RecentFilesList::slot_RecentFileClicked);
 	{
 		const int recentArraySize = settings.beginReadArray("recent");
 		for (int i = 0; i < recentArraySize; i++)

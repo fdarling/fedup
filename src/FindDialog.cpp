@@ -382,26 +382,26 @@ FindDialog::FindDialog(FScintilla *editor, QWidget *parent) : QDialog(parent, Qt
 	vboxOuter->addWidget(_tabbar);
 	vboxOuter->addWidget(frame);
 
-	connect(_tabbar, SIGNAL(currentChanged(int)), buttonsArea->stack, SLOT(setCurrentIndex(int)));
-	connect(_tabbar, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
-	connect(buttonsArea->find->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(buttonsArea->find->countButton, SIGNAL(clicked()), this, SLOT(_slot_Count()));
-	connect(buttonsArea->find->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindAll()));
-	connect(buttonsArea->replace->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(buttonsArea->findInFiles->findAllButton, SIGNAL(clicked()), this, SLOT(_slot_FindInFiles()));
-	connect(buttonsArea->findInFiles->followCurrentDocCheckbox, SIGNAL(toggled(bool)), this, SLOT(_slot_MaybeUpdateDirectoryText()));
-	connect(buttonsArea->findInFiles->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(buttonsArea->mark->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(buttonsArea->find->findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
-	connect(buttonsArea->replace->findNextButton, SIGNAL(clicked()), this, SLOT(_slot_FindNext()));
-	connect(buttonsArea->replace->replaceButton, SIGNAL(clicked()), this, SLOT(_slot_Replace()));
-	connect(buttonsArea->replace->replaceAllButton, SIGNAL(clicked()), this, SLOT(_slot_ReplaceAll()));
-	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(returnPressed()), buttonsArea->find->findNextButton, SIGNAL(clicked()));
-	connect(comboboxArea->findCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
-	connect(comboboxArea->directoryCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_DirectoryTextChanged()));
-	connect(comboboxArea->replaceCombobox->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(_slot_FindReplaceTextChanged()));
-	connect(comboboxArea->browseButton, SIGNAL(clicked()), this, SLOT(_slot_Browse()));
-	connect(qApp, SIGNAL(focusChanged(QWidget *, QWidget *)), this, SLOT(_slot_FocusChanged(QWidget *, QWidget *)));
+	connect(_tabbar, &QTabBar::currentChanged, buttonsArea->stack, &QStackedLayout::setCurrentIndex);
+	connect(_tabbar, &QTabBar::currentChanged, this, &FindDialog::_slot_CurrentChanged);
+	connect(buttonsArea->find->closeButton, &QPushButton::clicked, this, &FindDialog::close);
+	connect(buttonsArea->find->countButton, &QPushButton::clicked, this, &FindDialog::_slot_Count);
+	connect(buttonsArea->find->findAllButton, &QPushButton::clicked, this, &FindDialog::_slot_FindAll);
+	connect(buttonsArea->replace->closeButton, &QPushButton::clicked, this, &FindDialog::close);
+	connect(buttonsArea->findInFiles->findAllButton, &QPushButton::clicked, this, &FindDialog::_slot_FindInFiles);
+	connect(buttonsArea->findInFiles->followCurrentDocCheckbox, &QCheckBox::toggled, this, &FindDialog::_slot_MaybeUpdateDirectoryText);
+	connect(buttonsArea->findInFiles->closeButton, &QPushButton::clicked, this, &FindDialog::close);
+	connect(buttonsArea->mark->closeButton, &QPushButton::clicked, this, &FindDialog::close);
+	connect(buttonsArea->find->findNextButton, &QPushButton::clicked, this, &FindDialog::_slot_FindNext);
+	connect(buttonsArea->replace->findNextButton, &QPushButton::clicked, this, &FindDialog::_slot_FindNext);
+	connect(buttonsArea->replace->replaceButton, &QPushButton::clicked, this, &FindDialog::_slot_Replace);
+	connect(buttonsArea->replace->replaceAllButton, &QPushButton::clicked, this, &FindDialog::_slot_ReplaceAll);
+	connect(comboboxArea->findCombobox->lineEdit(), &QLineEdit::returnPressed, buttonsArea->find->findNextButton, &QPushButton::click);
+	connect(comboboxArea->findCombobox->lineEdit(), &QLineEdit::textChanged, this, &FindDialog::_slot_FindReplaceTextChanged);
+	connect(comboboxArea->directoryCombobox->lineEdit(), &QLineEdit::textChanged, this, &FindDialog::_slot_DirectoryTextChanged);
+	connect(comboboxArea->replaceCombobox->lineEdit(), &QLineEdit::textChanged, this, &FindDialog::_slot_FindReplaceTextChanged);
+	connect(comboboxArea->browseButton, &QPushButton::clicked, this, &FindDialog::_slot_Browse);
+	connect(qApp, &QApplication::focusChanged, this, &FindDialog::_slot_FocusChanged);
 
 	// to initialize it to the right state we call these slots as if the signals were triggered
 	_slot_CurrentChanged(_tabbar->currentIndex());

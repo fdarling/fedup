@@ -20,7 +20,7 @@ GoToDialog::GoToDialog(QWidget *parent) : QDialog(parent, Qt::Tool), lineedit(NU
 	QGridLayout * const grid = new QGridLayout(this);
 	grid->setSizeConstraint(QLayout::SetFixedSize);
 	lineMode = new QRadioButton("&Line", this);
-	connect(lineMode, SIGNAL(toggled(bool)), this, SLOT(slot_LineMode(bool)));
+	connect(lineMode, &QRadioButton::toggled, this, &GoToDialog::slot_LineMode);
 	grid->addWidget(lineMode, 0, 0);
 	grid->addWidget(new QRadioButton("&Offset"), 0, 1);
 	grid->addWidget(new QLabel("You are here:"), 1, 0);
@@ -30,14 +30,14 @@ GoToDialog::GoToDialog(QWidget *parent) : QDialog(parent, Qt::Tool), lineedit(NU
 	lineedit = new QLineEdit(this);
 	grid->addWidget(lineedit, 2, 1);
 	QPushButton * const goButton = new QPushButton("Go");
-	connect(lineedit, SIGNAL(returnPressed()), goButton, SIGNAL(clicked()));
-	connect(goButton, SIGNAL(clicked()), this, SLOT(slot_Go()));
+	connect(lineedit, &QLineEdit::returnPressed, goButton, &QPushButton::click);
+	connect(goButton, &QPushButton::clicked, this, &GoToDialog::slot_Go);
 	grid->addWidget(goButton, 2, 2);
 	grid->addWidget(new QLabel("You can't go further than:"), 3, 0);
 	maxLabel = new QLabel("1", this);
 	grid->addWidget(maxLabel, 3, 1);
 	QPushButton * const nowhereButton = new QPushButton("I'm going nowhere");
-	connect(nowhereButton, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(nowhereButton, &QPushButton::clicked, this, &GoToDialog::reject);
 	grid->addWidget(nowhereButton, 3, 2);
 
 	lineMode->setChecked(true);

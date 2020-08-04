@@ -31,8 +31,8 @@ EditPaneTabs::EditPaneTabs(QWidget *parent) : QTabBar(parent), _lastIndex(-1)
 	setMovable(true);
 	setTabsClosable(true);
 
-	connect(this, SIGNAL(currentChanged(int)), this, SLOT(_slot_CurrentChanged(int)));
-	connect(this, SIGNAL(tabMoved(int, int)), this, SLOT(_slot_TabMoved(int, int)));
+	connect(this, &EditPaneTabs::currentChanged, this, &EditPaneTabs::_slot_CurrentChanged);
+	connect(this, &EditPaneTabs::tabMoved, this, &EditPaneTabs::_slot_TabMoved);
 
 	if (savedIcon.isNull())
 	{
