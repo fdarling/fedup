@@ -49,7 +49,7 @@ int EditPaneTabs::addTab(const QString &tabname, TabContext *context)
 {
     blockSignals(true);
     const int newIndex = QTabBar::addTab(savedIcon, tabname);
-    setTabData(newIndex, qVariantFromValue(reinterpret_cast<void*>(context)));
+    setTabData(newIndex, QVariant::fromValue(reinterpret_cast<void*>(context)));
     blockSignals(false);
     const bool shouldEmit = (count() == 1);
     if (currentIndex() == newIndex)

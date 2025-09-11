@@ -615,12 +615,13 @@ bool FScintilla::event(QEvent *e)
 
 void FScintilla::wheelEvent(QWheelEvent *event)
 {
-    if (event->modifiers() == Qt::ControlModifier && event->orientation() == Qt::Vertical)
+    if (event->modifiers() == Qt::ControlModifier)
     {
         // TODO see if this works for high resolution mice, I have a feeling I will need to accumulate small scrolls
-        const int numDegrees = event->delta() / 8;
+        const int numDegrees = event->angleDelta().y() / 8;
         const int numSteps = numDegrees / 15;
-        zoomIn(numSteps);
+        if (numSteps)
+            zoomIn(numSteps);
     }
     else
         QsciScintilla::wheelEvent(event);
