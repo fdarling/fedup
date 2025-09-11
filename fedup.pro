@@ -4,12 +4,8 @@ QT += network widgets
 # CONFIG += release
 # CONFIG += console release
 # CONFIG += console debug
+CONFIG += qscintilla2
 INCLUDEPATH += src/qtsingleapplication
-greaterThan(QT_MAJOR_VERSION, 4) {
-    LIBS += -lqscintilla2_qt5
-} else {
-    LIBS += -lqscintilla2
-}
 
 RC_FILE = fedup.rc
 RESOURCES = fedup.qrc
